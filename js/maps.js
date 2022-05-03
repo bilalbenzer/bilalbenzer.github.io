@@ -6,6 +6,7 @@ const origin = [38066.8071289063 ,3842467.31384277];
 const resolutions = [(origin[1]-origin[0])/256];
 var i;
 
+
 for (i in range(1,17)){
     var cozunurluk = resolutions[i]/2;
     resolutions.push(cozunurluk);
