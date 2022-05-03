@@ -4,6 +4,7 @@
 */
 function create_point(){
     
+    
   
   var tekdongu=[1];
   //Sayfa Mesajlarında Çizime Başlamaya Dair Bildiri
