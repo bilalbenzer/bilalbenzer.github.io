@@ -6,7 +6,6 @@ const origin = [38066.8071289063 ,3842467.31384277];
 const resolutions = [(origin[1]-origin[0])/256];
 var i;
 
-
 for (i in range(1,17)){
     var cozunurluk = resolutions[i]/2;
     resolutions.push(cozunurluk);
@@ -301,6 +300,14 @@ function show_coordints() {
       }
     }
   }
+}
+function haritayi_yenile(){
+  if (gecerli_koordinat==="EPSG:3857"){
+    map.flyTo([38.9637,35.2433],7)}
+  else{
+    map.flyTo([38.9637,35.2433],4)
+  }
+  
 }
 const map_layers = []
 const map_layers_tum= []
