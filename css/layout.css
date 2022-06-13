@@ -125,10 +125,8 @@
 }
 #images{
     background-color: aliceblue;
-    opacity: 0.5;
     border-radius: 25px;
-    width: 70%;
-    height: auto;
+    width: 50%;
 }
 /* SAYFA SONU */*
 #footer{
