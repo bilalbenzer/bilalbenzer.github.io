@@ -103,8 +103,8 @@
 /* ANA SAYFA İLE İLGİLİ KISIMLAR */
 #container{
     position: static;
-    width: 95%;
-    height: 500px;
+    width: 100%;
+    height: 750px;
     overflow: hidden;
 }
 #updates_and_news{
@@ -124,9 +124,16 @@
     list-style-type:lower-roman;
 }
 #images{
-    background-color: aliceblue;
+    position: relative;
+    float: right;
+    overflow-y: scroll;
     border-radius: 25px;
-    width: 50%;
+    width: 78%;
+    height: 100%;
+}
+.new_image{
+    height: 100%;
+    
 }
 /* SAYFA SONU */*
 #footer{
