@@ -196,8 +196,20 @@ class multi_point {
     } 
     }
   }
-  objeyeyaklas(){  
-    map.fitBounds(this.coordinats)    
+  objeyeyaklas(){
+    console.log(this.coordinats.length)
+    if (this.coordinats.length===1){
+      if (gecerli_tilelayer!==""){
+        map.fitBounds(this.coordinats)
+      }
+      else{
+        alert("Katmana Yaklaşabilmek İçin Herhangi Bir Harita Servisinin Etkin Olması Gerekmektedir.")
+      }
+    }
+    else{
+      map.fitBounds(this.coordinats)
+    }
+  
   }
-  //oznitelikpenceresikapat(){}
+  oznitelikpenceresikapat(){}
 }
