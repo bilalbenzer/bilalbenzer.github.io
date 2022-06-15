@@ -197,19 +197,12 @@ class multi_point {
     }
   }
   objeyeyaklas(){
-    console.log(this.coordinats.length)
     if (this.coordinats.length===1){
-      if (gecerli_tilelayer!==""){
-        map.fitBounds(this.coordinats)
-      }
-      else{
-        alert("Katmana Yaklaşabilmek İçin Herhangi Bir Harita Servisinin Etkin Olması Gerekmektedir.")
-      }
+      map.flyTo([Object.values(this.coordinats)[0][0],Object.values(this.coordinats)[0][1]],14)
     }
     else{
       map.fitBounds(this.coordinats)
     }
-  
   }
   oznitelikpenceresikapat(){}
 }

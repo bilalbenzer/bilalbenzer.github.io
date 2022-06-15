@@ -307,14 +307,9 @@ class point_object {
       }
       // ---------------------objeye yaklaşmak için aşağıdaki fonksiyon kullanılır
       objeyeyaklas(){
-        // objeye yaklaşılabilmesi için map'de etkin bir harita servisinin olması gerekmektedir.
-        if (gecerli_tilelayer!==""){
-        map.fitBounds(this.bounds);  //map'de etkin harita varsa fitbounds ile objeye yaklaşılır
-        }
-        else{
-          //map'de etkin bir harita yoksa, kullanıcıya uyarı verilir
-        alert("Katmana Yaklaşabilmek İçin Herhangi Bir Harita Servisinin Etkin Olması Gerekmektedir.");
-        }
+        map.flyTo(this.coordinates_bound,14)
+
+//
     }
     katmanduzenle(t){
       document.getElementById("sayfamesajlari").style.backgroundColor="black";
