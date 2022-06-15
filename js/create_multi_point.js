@@ -139,6 +139,7 @@ class multi_point {
     this.layers.push(asd)
     for (var c in this.layers){
       this.layers[c].addTo(map)
+      this.layers[c].bindPopup(c)
       var x = Object.keys(this.layers[c]._layers)[0]
       this.coordinats.push([this.layers[c]._layers[x]._latlng.lat,this.layers[c]._layers[x]._latlng.lng])
       if (map_layers.includes(parseInt(x))===false){
@@ -203,6 +204,9 @@ class multi_point {
     else{
       map.fitBounds(this.coordinats)
     }
+  }
+  katmanduzenle(){
+    console.log(this.layers)
   }
   oznitelikpenceresikapat(){}
 }
