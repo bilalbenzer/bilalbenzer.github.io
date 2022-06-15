@@ -210,6 +210,8 @@ class point_object {
           iconUrl:null,
           iconSize:[50,50],
         };
+        this.coordinates_bound = []
+        
       }
       //obje, create point ile luşturulurken menüler de bu fonksiyon çağırılarak oluşturulur. 
       menuleriolustur(){
@@ -274,6 +276,10 @@ class point_object {
         console.log(this.layer)
         this.bounds=this.layer.getBounds() ; //objeye yakınlaşma işlevinin gerçekleşmesi için bu kısım ile obje çerçevvesinin koordinatları bounds değişkeine atanır
         var a =Object.keys(this.layer._layers)[0]
+        console.log(a)
+        console.log(this.layer)
+        this.coordinates_bound.push(this.layer._layers[a]._latlng.lat,this.layer._layers[a]._latlng.lng)
+        console.log(this.coordinates_bound)
         map_layers.push(parseInt(a))
         map_layers.push(parseInt(a)+1)
         map_layers_id_nolari.push(window[this.id_nosu])
