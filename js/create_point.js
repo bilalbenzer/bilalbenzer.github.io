@@ -126,9 +126,11 @@ function create_point(a){
   
   //-------------------------------------------------------------------------------------------------------------------------------------
     // koordinat girerek nokta oluşturma
-  function koordinatileolustur(n,m){
-  var w = n
-  var q = m
+  function koordinatileolustur(n,q){
+    console.log(n,q)
+    var w = n
+    var q = q
+    console.log(window[q])
   if (w==="olustur"){
       var x = document.getElementById('xbuton').value;
       var y = document.getElementById('ybuton').value;
