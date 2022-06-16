@@ -66,11 +66,12 @@ class multi_point {
       this.layers = []
     }
   objeler_ve_ozellikleri(x_coordinats,y_coordinats,object_name){
+    console.log(x_coordinats,y_coordinats)
     this.objeler_id_nolari.push(object_name.toString())
     window[object_name+"_ozellikler"] = {
       "type":"Feature",
       "properties": {
-                      "featureid" : this.object_name,
+                      "featureid" : object_name,
                       "Geometri Tipi" : "Nokta",
                       "X Koordinatı (Enlem)" : parseFloat(x_coordinats),
                       "Y Koordinatı (Boylam)" : parseFloat(y_coordinats)
@@ -124,7 +125,7 @@ class multi_point {
     document.getElementById(this.id_nosu).getElementsByTagName("button")[0].setAttribute('onclick',"window['"+this.id_nosu+"'].objeyiyenile()");
     document.getElementById(this.id_nosu).getElementsByTagName("button")[1].setAttribute('onclick',"window['"+this.id_nosu+"'].haritadagizle()");
     document.getElementById(this.id_nosu).getElementsByTagName("button")[2].setAttribute('onclick',"katman_sil('"+this.id_nosu+"')");
-    document.getElementById(this.id_nosu).getElementsByTagName("button")[3].setAttribute('onclick',"window['"+this.id_nosu+"'].katmanduzenle(window['"+this.id_nosu+"'])");
+    document.getElementById(this.id_nosu).getElementsByTagName("button")[3].setAttribute('onclick',"window['"+this.id_nosu+"'].katmanduzenle()");
     document.getElementById(this.id_nosu).getElementsByTagName("button")[4].setAttribute('onclick',"window['"+this.id_nosu+"'].objeyeyaklas()");
     document.getElementById(this.id_nosu).getElementsByTagName("button")[5].setAttribute('onclick',"window['"+this.id_nosu+"'].stildegistirme()");
     document.getElementById(this.id_nosu).getElementsByTagName("button")[6].setAttribute('onclick',"window['"+this.id_nosu+"'].oznitelikgoruntulemeveduzenleme()");
@@ -139,8 +140,8 @@ class multi_point {
     this.layers.push(asd)
     for (var c in this.layers){
       this.layers[c].addTo(map)
-      this.layers[c].bindPopup(c)
       var x = Object.keys(this.layers[c]._layers)[0]
+      console.log(x)
       this.coordinats.push([this.layers[c]._layers[x]._latlng.lat,this.layers[c]._layers[x]._latlng.lng])
       if (map_layers.includes(parseInt(x))===false){
         map_layers.push(parseInt(x))
@@ -150,6 +151,7 @@ class multi_point {
       map_layers_id_nolari.push(window[this.id_nosu])
     }        
     }
+    console.log(this.layers)
     
   }
   objeyiyenile(){
@@ -206,7 +208,9 @@ class multi_point {
     }
   }
   katmanduzenle(){
-    console.log(this.layers)
+    document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmana Tıklayabilir ve Farklı Bir Koordinata Taşıyabilirsiniz"
+    document.getElementById('sayfamesajlari').style.backgroundColor = "black";
   }
+
   oznitelikpenceresikapat(){}
 }
