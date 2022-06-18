@@ -124,7 +124,7 @@ class multi_point {
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[0].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].objeyiyenile()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[1].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].haritadagizle()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[2].setAttribute('onclick',"katman_sil('"+this.tum_ozellikler.id_nosu+"')");
-    document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[3].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].katmanduzenle()");
+    document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[3].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].katmanduzenle('"+this.tum_ozellikler.id_nosu+"')");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[4].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].objeyeyaklas()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[5].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].stildegistirme()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[6].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].oznitelikgoruntulemeveduzenleme()");
@@ -135,6 +135,7 @@ class multi_point {
         return L.circleMarker(latlng,x.bicim)
       }
     })
+    this.tum_ozellikler.objeler["'"+y+"'"]["feature"] = asd
     asd.addTo(this.tum_ozellikler.featuregroup)
     map_layers.push(this.tum_ozellikler.featuregroup.getLayerId(asd))
     this.tum_ozellikler.coordinats.push([asd._layers[this.tum_ozellikler.featuregroup.getLayerId(asd)-1]._latlng.lat,asd._layers[this.tum_ozellikler.featuregroup.getLayerId(asd)-1]._latlng.lng])
@@ -180,9 +181,20 @@ class multi_point {
       map.fitBounds(this.tum_ozellikler.featuregroup.getBounds())
     }
   }
-  katmanduzenle(){
+  katmanduzenle(x){
     document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmana Tıklayabilir ve Farklı Bir Koordinata Taşıyabilirsiniz"
     document.getElementById('sayfamesajlari').style.backgroundColor = "black";
+    this.tum_ozellikler.featuregroup.on('click',function(e){
+      var object_id=e.layer.feature.properties.featureid
+      var mevcut_renk = window[x].tum_ozellikler.objeler["'"+object_id+"'"].bicim.bicim.fillColor
+      window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+object_id+"'"]["feature"])
+      window[x].tum_ozellikler.objeler["'"+object_id+"'"].bicim.bicim.fillColor =  "#56ffff"
+      window[x].tum_ozellikler.objeler["'"+object_id+"'"]["feature"]= L.geoJSON(window[x].tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik,{
+        pointToLayer:function(feature,latlng){
+          return L.circleMarker(latlng,window[x].tum_ozellikler.objeler["'"+object_id+"'"].bicim.bicim)
+        }
+      }).addTo(window[x].tum_ozellikler.featuregroup)
+    })
   }
 
   oznitelikpenceresikapat(){}
