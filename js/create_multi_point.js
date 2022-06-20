@@ -188,7 +188,7 @@ class multi_point {
       map.flyTo([Object.values(this.tum_ozellikler.coordinats)[0][0],Object.values(this.tum_ozellikler.coordinats)[0][1]],14)
     }
     else{ //birden fazla obje varsa hepsine yaklaşır
-      map.fitBounds(this.tum_ozellikler.featuregroup.getBounds())
+      map.fitBounds(this.tum_ozellikler.featuregroup.getBounds(),10)
     }
   }
   katmanduzenle(x){ //katmanda düzenleme işlemleri için metot. haritada click olayı açılarak obje seçilir. seçilen obje açık mavi renk alır ve işlemlere başlanır
@@ -206,7 +206,6 @@ class multi_point {
           return L.circleMarker(latlng,window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
         }
       }).addTo(window[x].tum_ozellikler.featuregroup)
-      console.log(object_id_ve_renk)
       document.addEventListener('keydown', function abc(event)  {
       if (event.key==="n"){
         window[x].tum_ozellikler.featuregroup.off("click")
@@ -242,7 +241,6 @@ class multi_point {
       buton1.onclick = function(){
         window[x].objetasi(object_id_ve_renk,x)
       }
-      console.log(buton1)
       document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
       document.getElementById("sayfamesajlari").appendChild(buton1)
       document.getElementById("sayfamesajlari").appendChild(buton2)
@@ -250,7 +248,7 @@ class multi_point {
       document.getElementById("sayfamesajlari").appendChild(metin)
       document.getElementById("sayfamesajlari").appendChild(islemiptal)
     }
-    
+
     else if(Object.keys(object_id_ve_renk).length>1){
       document.getElementById("sayfamesajlari").innerHTML=""
       buton1.onclick = function(){
@@ -283,7 +281,7 @@ class multi_point {
           return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].bicim.bicim)
         } 
       }).addTo(window[class_id].tum_ozellikler.featuregroup)
-      await sleep(800)
+      await sleep(100)
       window[class_id].tum_ozellikler.featuregroup.removeLayer(asd)
       
     })
@@ -307,7 +305,73 @@ class multi_point {
     map.off('click')
     document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"
     })
-  }
 
+    document.addEventListener('keydown', function koordinatal_event(event)  {
+      if(event.key==="Home"){
+        window[class_id].objeyitasi_koordinatile(object_id_ve_renk,class_id)
+        document.removeEventListener('keydown',koordinatal_event)
+      }
+      })
+  }
+  objeyitasi_koordinatile(object_id_ve_renk,class_id){
+    map.off("mousemove")
+    map.off('click')
+    show_coordints()
+    document.getElementById("sayfamesajlari").innerText="Manuel Koordinat Girme İşlemi Başladı. Lütfen Uygun Enlem ve Boylamı Giriniz."
+    document.getElementById('obje_girdi').style.backgroundColor = "black";
+    var label1 = document.createElement("label")
+    label1.setAttribute("for","xbutton")
+    label1.innerText="E:"
+    var e1=document.createElement("input")
+    e1.innerText="E:"
+    e1.setAttribute("id","xbutton")
+    e1.setAttribute("type","number")
+    e1.setAttribute("step","0.001")
+    e1.required=true
+    var label2=document.createElement("label")
+    label2.setAttribute("for","ybutton")
+    label2.innerText="B:"
+    var b1=document.createElement("input")
+    b1.innerText="B:"
+    b1.setAttribute("id","ybutton")
+    b1.setAttribute("type","number")
+    b1.setAttribute("step","0.001")
+    b1.required=true
+    var koordinatal=document.createElement("input")
+    koordinatal.setAttribute("type","submit")
+    koordinatal.onclick=function(){
+      window[class_id].objeduzenlekoordinatile(object_id_ve_renk,class_id)
+    }
+    koordinatal.innerText="Taşı"
+    document.getElementById("obje_girdi").appendChild(label1)
+    document.getElementById("obje_girdi").appendChild(e1)
+    document.getElementById("obje_girdi").appendChild(document.createElement("br"))
+    document.getElementById("obje_girdi").appendChild(label2)
+    document.getElementById("obje_girdi").appendChild(b1)
+    document.getElementById("obje_girdi").appendChild(document.createElement("br"))
+    document.getElementById("obje_girdi").appendChild(koordinatal)   
+  }
+  objeduzenlekoordinatile(object_id_ve_renk,class_id){
+  var x1  = (parseFloat(document.getElementById("xbutton").value)).toFixed(8)
+  var y1  =(parseFloat(document.getElementById("ybutton").value)).toFixed(8)
+
+  var object_id2=Object.keys(object_id_ve_renk)[0]
+  var eski_renk= object_id_ve_renk[Object.keys(object_id_ve_renk)[0]].renk
+  window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim.fillColor=eski_renk
+  window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"] = parseFloat(x1)
+  window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"] = parseFloat(y1)
+  window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.geometry.coordinates = [parseFloat(y1),parseFloat(x1)]
+
+  window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].feature= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik,{
+    pointToLayer:function(feature,latlng){                              //objeye ait layerin oluşması
+      return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim)
+    } 
+  }).addTo(window[class_id].tum_ozellikler.featuregroup)
+  document.getElementById("obje_girdi").style.backgroundColor="unset"
+  document.getElementById("obje_girdi").innerHTML=""
+  document.getElementById("sayfamesajlari").innerText=object_id2+" Noktası, Başarılı Bir Şekilde " + x1+"----"+y1+" Koordinatlarına Taşındı."
+  
+}
   oznitelikpenceresikapat(){}
+
 }
