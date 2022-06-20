@@ -108,6 +108,7 @@ function create_point(a){
     document.addEventListener('keydown', function abc(event)  {
     var code = event.code;
 
+    
       // home tuşunun basılması durumunda elle korodinat girme fonksiyonu çalıştırılır
     if (code==="Home"){
     document.getElementById('obje_girdi').style.backgroundColor = "black";

@@ -131,6 +131,7 @@ const koordinat_sistemleri = {
             origin:[38066.8071289063,3842467.31384277],
             }),               
 }
+
 function koordinat_degistirme(i){
   var i = i
   for (a in koordinat_sistemleri){

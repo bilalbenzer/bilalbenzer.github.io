@@ -250,6 +250,7 @@ class multi_point {
       document.getElementById("sayfamesajlari").appendChild(metin)
       document.getElementById("sayfamesajlari").appendChild(islemiptal)
     }
+    
     else if(Object.keys(object_id_ve_renk).length>1){
       document.getElementById("sayfamesajlari").innerHTML=""
       buton1.onclick = function(){
