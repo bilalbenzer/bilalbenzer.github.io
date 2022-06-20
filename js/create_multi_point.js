@@ -33,7 +33,8 @@ function multi_create_point(a){
       }
       }
     else{
-      alert("Bu İd'ye Sahip Bir Obje Bulunmakta.");   //katman adı eğer daha önce tanımlanmış ise uyarı verilecek
+      alert("Bu İd'ye Sahip Bir Obje Bulunmakta.");
+      map.off("click")   //katman adı eğer daha önce tanımlanmış ise uyarı verilecek
          }});
    // klavye kısayollarının etkinleştirilmesi
   document.addEventListener('keydown', function abc(event)  { //kullanıcı klavye kısayollarını kullanabilecek
@@ -53,6 +54,11 @@ function multi_create_point(a){
   document.removeEventListener("keydown",abc) // klavye kısayolu işlevi sonlanacak
   bekleme();
   map.off('click'); //haritada tıklama olayı sonlanacak
+  }
+  else{
+    document.removeEventListener("keydown",abc) // klavye kısayolu işlevi sonlanacak
+    bekleme();
+    map.off('click'); //haritada tıklama olayı sonlanacak
   }
   });
 }
@@ -96,7 +102,8 @@ class multi_point {
                                                             iconUrl:null,
                                                             iconSize:[50,50],
                                                           }
-                                                      }
+                                                      },
+                                                      feature:null
                                                       }
   }
   menuleriolustur(){ // katmana ilişkin menü kısmı ve elemanları oluştuurlacak
@@ -134,17 +141,16 @@ class multi_point {
                                         //obje id si map_layers listesine eklenecek
                                         //obje fature objesi map_layers_id_nolari listesine eklenecek
 
-    var asd = L.geoJSON(this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik,{
+    this.tum_ozellikler.objeler["'"+object_id+"'"].feature = L.geoJSON(this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik,{
       pointToLayer:function(feature,latlng){                              //objeye ait layerin oluşması
         return L.circleMarker(latlng,object_bicim.bicim)
       } 
     })
-    this.tum_ozellikler.objeler["'"+object_id+"'"]["feature"] = asd //oluşan layer, classtaki dizesine verilecek
-    asd.addTo(this.tum_ozellikler.featuregroup) //oluşan layer, featuregroupa eklenerek haritaya eklenecek
-    map_layers.push(this.tum_ozellikler.featuregroup.getLayerId(asd)) //obje id si map_layers listesine eklenecek
-
-    this.tum_ozellikler.coordinats.push([asd._layers[this.tum_ozellikler.featuregroup.getLayerId(asd)-1]._latlng.lat,//objeye ait koordinatlar, class taki coordinates listesine eklenecek
-    asd._layers[this.tum_ozellikler.featuregroup.getLayerId(asd)-1]._latlng.lng])  //objeye ait koordinatlar, class taki coordinates listesine eklenecek
+    this.tum_ozellikler.objeler["'"+object_id+"'"]["feature"] = this.tum_ozellikler.objeler["'"+object_id+"'"].feature //oluşan layer, classtaki dizesine verilecek
+    this.tum_ozellikler.objeler["'"+object_id+"'"].feature.addTo(this.tum_ozellikler.featuregroup) //oluşan layer, featuregroupa eklenerek haritaya eklenecek
+    map_layers.push(this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)) //obje id si map_layers listesine eklenecek
+    this.tum_ozellikler.coordinats.push([this.tum_ozellikler.objeler["'"+object_id+"'"].feature._layers[this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)-1]._latlng.lat,//objeye ait koordinatlar, class taki coordinates listesine eklenecek
+    this.tum_ozellikler.objeler["'"+object_id+"'"].feature._layers[this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)-1]._latlng.lng])  //objeye ait koordinatlar, class taki coordinates listesine eklenecek
 
     if (map_layers_id_nolari.includes(window[this.tum_ozellikler.id_nosu])===false){  //class ın tüm özellikleri map_layers_id_nolari na iletilecek
       map_layers_id_nolari.push(window[this.tum_ozellikler.id_nosu])
@@ -186,12 +192,12 @@ class multi_point {
     }
   }
   katmanduzenle(x){ //katmanda düzenleme işlemleri için metot. haritada click olayı açılarak obje seçilir. seçilen obje açık mavi renk alır ve işlemlere başlanır
-    document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmana Tıklayabilir ve Farklı Bir Koordinata Taşıyabilirsiniz"
+    document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmanlara Tıklayarak Seçebilirsiniz.\nTaşıma İşlemi İçin Lütfen 1 Obje Seçiniz.\nToplu Değişiklikler Olarak Silme İşlemi Gerçekleştirilebilir\nSeçme İşlemini SOnladırmak İçin 'N' Tuşuna Basınız."
     document.getElementById('sayfamesajlari').style.backgroundColor = "black";
     var object_id_ve_renk = {}
     this.tum_ozellikler.featuregroup.on('click',function(e){  //seçme işlemi için featuregroup objesinde click işlevi açılır
-      document.getElementById("sayfamesajlari").innerText="Seçim İşlemi Başladı. Harita Üzerinde Objelere Tıklayarak Seçebilir Ve Taşıma-Silme İşlemlerini Gerçekleştirebilirsiniz.\nSeçme İşlemini SOnladırmak İçin 'N' Tuşuna Basınız."
-      object_id_ve_renk[e.layer.feature.properties.featureid] = {"renk":window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim.fillColor}   //seçilen layerın id nosu alınır
+      object_id_ve_renk[e.layer.feature.properties.featureid] = {"renk":window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim.fillColor,
+                                                                  "id":parseInt(Object.keys(e.layer._eventParents))}   //seçilen layerın id nosu alınır
   //seçilen layerın mevcut rengi alınır
       window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"]["feature"]) //seçilen obje kaldırılır
       window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim.fillColor =  "#56ffff"  //seçilen objeye seçi mrengi verilir
@@ -200,7 +206,7 @@ class multi_point {
           return L.circleMarker(latlng,window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
         }
       }).addTo(window[x].tum_ozellikler.featuregroup)
-      
+      console.log(object_id_ve_renk)
       document.addEventListener('keydown', function abc(event)  {
       if (event.key==="n"){
         window[x].tum_ozellikler.featuregroup.off("click")
@@ -209,7 +215,10 @@ class multi_point {
         for (var c in Object.keys(object_id_ve_renk)){
          secilen_objeler +=  Object.keys(object_id_ve_renk)[c] +"\n"
         }
-        document.getElementById("sayfamesajlari").innerText="Seçim İşlemi Sonlandı. Seçilen Objeler:\n"+secilen_objeler
+      window[x].objeduzenle(object_id_ve_renk,secilen_objeler,x)
+      }
+      else{
+        document.removeEventListener("keydown",abc)
       }
     
     
@@ -218,14 +227,85 @@ class multi_point {
       //window[x].objeduzenle(object_id_ve_renk[e.layer.feature.properties.featureid].renk,e.layer.feature.properties.featureid)
     })
   }
-  objeduzenle(mevcut_renk,object_id){
-    console.log(mevcut_renk,object_id)
+  objeduzenle(object_id_ve_renk,secilen_objeler,x){
     this.tum_ozellikler.featuregroup.off('click')
     var buton1 = document.createElement("button")
     buton1.innerText="Taşı"
-    document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
-    document.getElementById("sayfamesajlari").appendChild(buton1)
+    var buton2 = document.createElement("button")
+    buton2.innerText="Sil"
+    var metin = document.createElement("p")
+    metin.innerText="Seçim İşlemi Sonlandı. Seçilen Objeler:\n"+secilen_objeler
+    var islemiptal = document.createElement("button")
+    islemiptal.innerText="İptal Et"
+    if (Object.keys(object_id_ve_renk).length===1){
+      document.getElementById("sayfamesajlari").innerHTML=""
+      buton1.onclick = function(){
+        window[x].objetasi(object_id_ve_renk,x)
+      }
+      console.log(buton1)
+      document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
+      document.getElementById("sayfamesajlari").appendChild(buton1)
+      document.getElementById("sayfamesajlari").appendChild(buton2)
+      document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
+      document.getElementById("sayfamesajlari").appendChild(metin)
+      document.getElementById("sayfamesajlari").appendChild(islemiptal)
+    }
+    else if(Object.keys(object_id_ve_renk).length>1){
+      document.getElementById("sayfamesajlari").innerHTML=""
+      buton1.onclick = function(){
+        window[x].objetasi(object_id_ve_renk)
+      }
+      document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
+      document.getElementById("sayfamesajlari").appendChild(buton2)
+      document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
+      document.getElementById("sayfamesajlari").appendChild(metin)
+      document.getElementById("sayfamesajlari").appendChild(islemiptal)
+    }
+    else{
+      alert("Hiçbir Obje Seçilmedi.")
+    }
+  }
+  objetasi(object_id_ve_renk,class_id){
+    var z = object_id_ve_renk
+    this.tum_ozellikler.featuregroup.removeLayer(this.tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].feature)
+    document.getElementById("sayfamesajlari").innerText="Taşıma İşlemi Başladı.Taşımak İstediğiniz yere Fare İmlecini Sürükleyerek ve Tıklayarak Bırakın.\nKoordinat Girerek Taşıma İşlemini Gerçekleştirmek İçin 'Home' Tuşuna Basınız."
+    map.on('mousemove' ,async function tasima(tasi){
+      var x = (tasi.latlng.lat).toFixed(8)
+      var y=(tasi.latlng.lng).toFixed(8)
+      var object_id = Object.keys(z)[0]
+      window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"] = parseFloat(x)
+      window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"] = parseFloat(y)
+      window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.geometry.coordinates = [parseFloat(y),parseFloat(x)]
 
+      var asd = L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik,{
+        pointToLayer:function(feature,latlng){                              //objeye ait layerin oluşması
+          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+object_id+"'"].bicim.bicim)
+        } 
+      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+      await sleep(800)
+      window[class_id].tum_ozellikler.featuregroup.removeLayer(asd)
+      
+    })
+    map.on('click',function tiktik(birak){
+      map.off("mousemove")
+      show_coordints()
+      var x1 = (birak.latlng.lat).toFixed(8)
+      var y1 = (birak.latlng.lng).toFixed(8)
+      var object_id2=Object.keys(z)[0]
+      var eski_renk= object_id_ve_renk[Object.keys(object_id_ve_renk)[0]].renk
+      window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim.fillColor=eski_renk
+      window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"] = parseFloat(x1)
+      window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"] = parseFloat(y1)
+      window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.geometry.coordinates = [parseFloat(y1),parseFloat(x1)]
+
+      window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].feature= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik,{
+        pointToLayer:function(feature,latlng){                              //objeye ait layerin oluşması
+          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim)
+        } 
+      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+    map.off('click')
+    document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"
+    })
   }
 
   oznitelikpenceresikapat(){}

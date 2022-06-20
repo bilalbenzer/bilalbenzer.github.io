@@ -6,6 +6,7 @@ var alfabe_harfler = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o
                       "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","X","W","Y","Y","Z",
                     "1","2","3","4","5","6","7","8","9","0"]  
 function katman_adi_olusturma(x){ //oluşturulacak obje için kullanıcıdan katman adı istenir.
+  document.getElementById("create_object").open = false
   document.getElementById("sayfamesajlari").style.backgroundColor="black";
   document.getElementById("sayfamesajlari").innerText="Katman Adını Giriniz.";
   var formelement = document.createElement("form");
@@ -120,6 +121,10 @@ function create_point(a){
     document.getElementById('sayfamesajlari').innerText = "İşlem Tamamlandı";
     document.removeEventListener("keydown",abc)
     bekleme();
+    }
+    else{
+      document.removeEventListener("keydown",abc)
+      bekleme();
     }
     });
   }

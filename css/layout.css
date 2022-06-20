@@ -135,6 +135,7 @@
     border-radius: 25px;
     width: 78%;
     height: 750px;
+    text-align: center;
 }
 #images::-webkit-scrollbar,#updates_and_news::-webkit-scrollbar{
     display: none;
