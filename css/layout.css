@@ -136,6 +136,8 @@
     width: 78%;
     height: 750px;
     text-align: center;
+    background-image: url("../static/images_background.png");
+
 }
 #images::-webkit-scrollbar,#updates_and_news::-webkit-scrollbar{
     display: none;

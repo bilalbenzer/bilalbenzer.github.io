@@ -260,6 +260,7 @@ function map_create(i){
   //tilelayer add
   var gecerli_tilelayer = ""
   var i 
+
   function add_tilelayer(x){
     if (gecerli_koordinat==="EPSG:3857"){
       maps_for_leaflet[x].addTo(map)
@@ -277,6 +278,11 @@ function map_create(i){
 function remove_tile_layer(x){
   maps_for_leaflet[x].remove(map)
   gecerli_tilelayer=""
+}
+function tilelayer_yenile(x){
+  var x=x
+  remove_tile_layer(x)
+  add_tilelayer(x)
 }
   // Haritanın Sol Alt Köşesinde Koordinat Gösterme
 function show_coordints() { 
@@ -303,6 +309,9 @@ function show_coordints() {
   }
 }
 function haritayi_yenile(){
+  var x = gecerli_tilelayer
+  remove_tile_layer(x)
+  add_tilelayer(x)
   if (gecerli_koordinat==="EPSG:3857"){
     map.flyTo([38.9637,35.2433],7)}
   else{

@@ -5,7 +5,7 @@
 var alfabe_harfler = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t","u","v","x","w","y","z",
                       "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","X","W","Y","Y","Z",
                     "1","2","3","4","5","6","7","8","9","0"]  
-function katman_adi_olusturma(x){ //oluşturulacak obje için kullanıcıdan katman adı istenir.
+function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıdan katman adı istenir.
   document.getElementById("create_object").open = false
   document.getElementById("sayfamesajlari").style.backgroundColor="black";
   document.getElementById("sayfamesajlari").innerText="Katman Adını Giriniz.";
@@ -20,10 +20,10 @@ function katman_adi_olusturma(x){ //oluşturulacak obje için kullanıcıdan kat
   isimgonder.setAttribute("type","submit");
   isimgonder.setAttribute("value","Uygula");
   // katman adı hangi işlem için kullanılıcaksa ilgili işlem, ilgili fonksiyona bildirilir
-  if (x==="createpoint"){
-  isimgonder.setAttribute("onclick","ad_kontrol('createpoint')");}
-  else if (x==="createmultipoint"){
-    isimgonder.setAttribute("onclick","ad_kontrol('createmultipoint')")
+  if (obje_type==="createpoint"){
+  isimgonder.setAttribute("onclick","check_layer_name('createpoint')");}
+  else if (obje_type==="createmultipoint"){
+    isimgonder.setAttribute("onclick","check_layer_name('createmultipoint')")
   }
   var kapat = document.createElement("button");
   kapat.setAttribute("onclick","bekleme()");
@@ -32,54 +32,54 @@ function katman_adi_olusturma(x){ //oluşturulacak obje için kullanıcıdan kat
   document.getElementById("sayfamesajlari").appendChild(isimgonder);
   document.getElementById("sayfamesajlari").appendChild(kapat)
 }
-function ad_kontrol(x){ //kullanıcıdan gelen katman adı, bir kontrolden geçer. Katman Adı boşluk-rakam veya özel karakterle başlayamaz. İçerisinde özel karakter ve boşluk içeremez.
+function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir kontrolden geçer. Katman Adı boşluk-rakam veya özel karakterle başlayamaz. İçerisinde özel karakter ve boşluk içeremez.
                         //aykırı bir durumda kullanıcıya uyarı verilir ve tekrar giriş penceresi açılır
-  var a = document.getElementById("isimal").value
-    if (alfabe_harfler.includes(a[0])===true && isNaN(parseFloat(a[0]))===true && typeof window[a]!=="object"){
+  var layer_demo_name = document.getElementById("isimal").value
+    if (alfabe_harfler.includes(layer_demo_name[0])===true && isNaN(parseFloat(layer_demo_name[0]))===true && typeof window[layer_demo_name]!=="object"){
       var kontrol_durum
-      for (var c in range(0,(a.length-1))){
-          if (alfabe_harfler.includes(a[c])===true){
+      for (var c in range(0,(layer_demo_name.length-1))){
+          if (alfabe_harfler.includes(layer_demo_name[c])===true){
             kontrol_durum="sorun yok"
           }
           else {
             alert("Girdiğiniz Katman Adı Özel Karakter ve Boşluk İçeremez.")
             kontrol_durum="sorun var"
-            if (x==="createpoint"){
-            katman_adi_olusturma("createpoint")
+            if (layer_name==="createpoint"){
+            create_layer_name("createpoint")
             }
             else{
-            katman_adi_olusturma("createmultipoint")
+            create_layer_name("createmultipoint")
             }
             break
           }
         }
       if (kontrol_durum==="sorun yok"){
-        if (x==="createpoint"){
-          create_point(a)
+        if (layer_name==="createpoint"){
+          create_point(layer_demo_name)
           }
-        else if(x==="createmultipoint"){
-          multi_create_point(a)
+        else if(layer_name==="createmultipoint"){
+          multi_create_point(layer_demo_name)
           }
       }
       
     } 
     // katman adı daha önceden kullanılmışsa uyarı verilir ve farklı bir ad girmesi istenir
-    else if (typeof window[a]==="object"){
+    else if (typeof window[layer_demo_name]==="object"){
       alert("Bu Katman Adı İle Daha Önce Bir Katman Oluşturuldu. Farklı Bir Ad Deneyiniz.")
-      if (x==="createpoint"){
-        katman_adi_olusturma("createpoint")
+      if (layer_name==="createpoint"){
+        create_layer_name("createpoint")
         }
         else{
-          katman_adi_olusturma("createmultipoint")
+          create_layer_name("createmultipoint")
         }
     }
     else {
       alert("Katman Adı Özel Karakter,sayı ve boşluk ile başlayamaz.\nTekrar Deneyiniz.")
-      if (x==="createpoint"){
-        katman_adi_olusturma("createpoint")
+      if (layer_name==="createpoint"){
+        create_layer_name("createpoint")
         }
         else{
-          katman_adi_olusturma("createmultipoint")
+          create_layer_name("createmultipoint")
         }
     }
 }
@@ -181,9 +181,14 @@ function create_point(a){
     window[q].properties["X Koordinatı(Enlem)"]=parseFloat(x)
     window[q].properties["Y Koordinatı(Boylam)"]=parseFloat(y)
     window[q].geojsonfeature.geometry.coordinates = [y,x]
+    eski_x=window[q].coordinates_bound[0]
+    eski_y=window[q].coordinates_bound[1]
+    window[q].coordinates_bound[0]=x
+    window[q].coordinates_bound[1]=y
     window[q].objeyiyenile(window[q])
     document.getElementById('obje_girdi').innerText="";
     document.getElementById('obje_girdi').style.backgroundColor="unset";
+    document.getElementById("sayfamesajlari").innerText=window[q].id_nosu + " Noktası,"+eski_x+"--"+eski_y+" Koordinatlarından "+x+"--"+y+" Koordinatlarına Başarılı Bir Şekilde Taşındı."
     bekleme()
 
 
@@ -281,13 +286,9 @@ class point_object {
         this.layer=L.geoJSON(this.geojsonfeature,{
           pointToLayer:function(feature,latlng){
             return L.circleMarker(latlng,x);}}).addTo(map);
-        console.log(this.layer)
         this.bounds=this.layer.getBounds() ; //objeye yakınlaşma işlevinin gerçekleşmesi için bu kısım ile obje çerçevvesinin koordinatları bounds değişkeine atanır
         var a =Object.keys(this.layer._layers)[0]
-        console.log(a)
-        console.log(this.layer)
         this.coordinates_bound.push(this.layer._layers[a]._latlng.lat,this.layer._layers[a]._latlng.lng)
-        console.log(this.coordinates_bound)
         map_layers.push(parseInt(a))
         map_layers.push(parseInt(a)+1)
         map_layers_id_nolari.push(window[this.id_nosu])
@@ -322,15 +323,21 @@ class point_object {
     katmanduzenle(t){
       document.getElementById("sayfamesajlari").style.backgroundColor="black";
       document.getElementById("sayfamesajlari").innerText="Objenin Yeni Koordinatını Sol Tıklayarak Gösteriniz.\nManuel Koordinat Girmek İçin Home Tuşuna Basınız.\nBitirmek İçin End Tuşuna Basınız.";
-      map.on('click', (e)=>{
+      map.on('click', async function (e){
       x_noktasi = (e.latlng.lat).toFixed(8);
       y_noktasi = (e.latlng.lng).toFixed(8);
-      sleep(1000);
-      document.getElementById("sayfamesajlari").innerText="Objenin Yeni Koordinatını Sol Tıklayarak Gösteriniz.\nManuel Koordinat Girmek İçin Home Tuşuna Basınız.\nBitirmek İçin End Tuşuna Basınız."+"\n"+"X:"+x_noktasi+"Y:"+y_noktasi;
-      this.properties["X Koordinatı(Enlem)"]=parseFloat(x_noktasi)
-      this.properties["Y Koordinatı(Boylam)"]=parseFloat(y_noktasi)
-      this.geojsonfeature.geometry.coordinates = [y_noktasi,x_noktasi]
-      this.objeyiyenile(window[this.id_nosu])
+      var eski_x = t.coordinates_bound[0]
+      var eski_y=t.coordinates_bound[1]
+      t.coordinates_bound[0]=x_noktasi
+      t.coordinates_bound[1]=y_noktasi
+      document.getElementById("sayfamesajlari").innerText="Nokta yeni koordinatına taşınıyor..."
+      await sleep(400)
+      document.getElementById("sayfamesajlari").innerText=t.id_nosu + " Noktası,"+eski_x+"--"+eski_y+" Koordinatlarından "+x_noktasi+"--"+y_noktasi+" Koordinatlarına Başarılı Bir Şekilde Taşındı."
+      t.properties["X Koordinatı(Enlem)"]=parseFloat(x_noktasi)
+      t.properties["Y Koordinatı(Boylam)"]=parseFloat(y_noktasi)
+      t.geojsonfeature.geometry.coordinates = [y_noktasi,x_noktasi]
+      t.objeyiyenile(window[t.id_nosu])
+      await sleep(800)
       bekleme()
       map.off("click")
     }

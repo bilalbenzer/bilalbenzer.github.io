@@ -149,12 +149,13 @@ class multi_point {
     this.tum_ozellikler.objeler["'"+object_id+"'"]["feature"] = this.tum_ozellikler.objeler["'"+object_id+"'"].feature //oluşan layer, classtaki dizesine verilecek
     this.tum_ozellikler.objeler["'"+object_id+"'"].feature.addTo(this.tum_ozellikler.featuregroup) //oluşan layer, featuregroupa eklenerek haritaya eklenecek
     map_layers.push(this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)) //obje id si map_layers listesine eklenecek
+
     this.tum_ozellikler.coordinats.push([this.tum_ozellikler.objeler["'"+object_id+"'"].feature._layers[this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)-1]._latlng.lat,//objeye ait koordinatlar, class taki coordinates listesine eklenecek
     this.tum_ozellikler.objeler["'"+object_id+"'"].feature._layers[this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)-1]._latlng.lng])  //objeye ait koordinatlar, class taki coordinates listesine eklenecek
-
     if (map_layers_id_nolari.includes(window[this.tum_ozellikler.id_nosu])===false){  //class ın tüm özellikleri map_layers_id_nolari na iletilecek
       map_layers_id_nolari.push(window[this.tum_ozellikler.id_nosu])
     }
+    console.log(this.tum_ozellikler.coordinats)
   }
   objeyiyenile(){ //bazı durumlarda objelerde değişiklik yaplabilmesi için obje haritadan kaldırılıp tekrar eklenecek
     window[this.tum_ozellikler.id_nosu].haritadagizle() //obje haritadan gizlenecek (kaldırılacak)-obje id leri map_layersdan kaldırılacak-class objesi map_layers_id den kaldırılacak
@@ -185,7 +186,11 @@ class multi_point {
   }
   objeyeyaklas(){ //haritada katmana yaklaşmak için metot
     if (this.tum_ozellikler.coordinats.length===1){ //eğer tek nokta varsa bu blok kullanılarak yaklaşılır
-      map.flyTo([Object.values(this.tum_ozellikler.coordinats)[0][0],Object.values(this.tum_ozellikler.coordinats)[0][1]],14)
+      console.log(this.tum_ozellikler.coordinats)
+        map.flyTo([this.tum_ozellikler.coordinats[0][0], this.tum_ozellikler.coordinats[0][1]],15)
+        tilelayer_yenile(gecerli_tilelayer)
+        window[this.tum_ozellikler.id_nosu].objeyiyenile()
+        
     }
     else{ //birden fazla obje varsa hepsine yaklaşır
       map.fitBounds(this.tum_ozellikler.featuregroup.getBounds(),10)
@@ -195,7 +200,9 @@ class multi_point {
     document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmanlara Tıklayarak Seçebilirsiniz.\nTaşıma İşlemi İçin Lütfen 1 Obje Seçiniz.\nToplu Değişiklikler Olarak Silme İşlemi Gerçekleştirilebilir\nSeçme İşlemini SOnladırmak İçin 'N' Tuşuna Basınız."
     document.getElementById('sayfamesajlari').style.backgroundColor = "black";
     var object_id_ve_renk = {}
-    this.tum_ozellikler.featuregroup.on('click',function(e){  //seçme işlemi için featuregroup objesinde click işlevi açılır
+    console.log(this.tum_ozellikler.coordinats)
+    this.tum_ozellikler.featuregroup.on('click',function(e){
+        //seçme işlemi için featuregroup objesinde click işlevi açılır
       object_id_ve_renk[e.layer.feature.properties.featureid] = {"renk":window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim.fillColor,
                                                                   "id":parseInt(Object.keys(e.layer._eventParents))}   //seçilen layerın id nosu alınır
   //seçilen layerın mevcut rengi alınır
@@ -206,10 +213,10 @@ class multi_point {
           return L.circleMarker(latlng,window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
         }
       }).addTo(window[x].tum_ozellikler.featuregroup)
-      document.addEventListener('keydown', function abc(event)  {
+      document.addEventListener('keydown', function abcd(event)  {
       if (event.key==="n"){
         window[x].tum_ozellikler.featuregroup.off("click")
-        document.removeEventListener("keydown",abc)
+        document.removeEventListener("keydown",abcd)
         var secilen_objeler = ""
         for (var c in Object.keys(object_id_ve_renk)){
          secilen_objeler +=  Object.keys(object_id_ve_renk)[c] +"\n"
@@ -217,7 +224,7 @@ class multi_point {
       window[x].objeduzenle(object_id_ve_renk,secilen_objeler,x)
       }
       else{
-        document.removeEventListener("keydown",abc)
+        document.removeEventListener("keydown",abcd)
       }
     
     
@@ -267,6 +274,9 @@ class multi_point {
   objetasi(object_id_ve_renk,class_id){
     var z = object_id_ve_renk
     this.tum_ozellikler.featuregroup.removeLayer(this.tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].feature)
+    var eski_x=window[class_id].tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"]
+    var eski_y=window[class_id].tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"]
+    var eski_koordinatlar = [eski_x,eski_y]
     document.getElementById("sayfamesajlari").innerText="Taşıma İşlemi Başladı.Taşımak İstediğiniz yere Fare İmlecini Sürükleyerek ve Tıklayarak Bırakın.\nKoordinat Girerek Taşıma İşlemini Gerçekleştirmek İçin 'Home' Tuşuna Basınız."
     map.on('mousemove' ,async function tasima(tasi){
       var x = (tasi.latlng.lat).toFixed(8)
@@ -292,6 +302,12 @@ class multi_point {
       var y1 = (birak.latlng.lng).toFixed(8)
       var object_id2=Object.keys(z)[0]
       var eski_renk= object_id_ve_renk[Object.keys(object_id_ve_renk)[0]].renk
+      for (var c in window[class_id].tum_ozellikler.coordinats){
+        if (window[class_id].tum_ozellikler.coordinats[c].includes(eski_x)===true && window[class_id].tum_ozellikler.coordinats[c].includes(eski_y)===true){
+          window[class_id].tum_ozellikler.coordinats[c][0]= parseFloat(x1)
+          window[class_id].tum_ozellikler.coordinats[c][1]=parseFloat(y1)
+        }
+        }
       window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim.fillColor=eski_renk
       window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"] = parseFloat(x1)
       window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"] = parseFloat(y1)
@@ -303,7 +319,7 @@ class multi_point {
         } 
       }).addTo(window[class_id].tum_ozellikler.featuregroup)
     map.off('click')
-    document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"
+    document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"+bekleme()
     })
 
     document.addEventListener('keydown', function koordinatal_event(event)  {
