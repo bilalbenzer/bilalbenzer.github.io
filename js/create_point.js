@@ -87,7 +87,30 @@ function create_point(a){
     document.getElementById("oznitelikpenceresi").innerHTML="";
     var a = a
     //Sayfa Mesajlarında Çizime Başlamaya Dair Bildiri
-    document.getElementById('sayfamesajlari').innerText=a+" Katmanı Oluşturuldu.\nÇizime Başlayabilirsiniz.\nHome: Koordinat Gir\nEnd: Bitir";
+    var koordinat_gir_buton=document.createElement("button")
+    koordinat_gir_buton.innerText="Koordinat Gir"
+    koordinat_gir_buton.onclick= function(){
+      map.off("click")
+      document.getElementById('obje_girdi').style.backgroundColor = "black";
+      document.getElementById('obje_girdi').innerHTML='<label for="xbuton">E :</label><input type="number" maxlength="999999" id="xbuton" step="0.001" value="" required><br><label for="ybuton">B :</label><input type="number" maxlength="999999" id="ybuton" step="0.001" value="" required><input id="koordinatal" type="submit"  value="nokta oluştur">';
+      document.getElementById("koordinatal").setAttribute("onclick","koordinatileolustur('"+"olustur"+"')")
+      document.getElementById("sayfamesajlari").innerText="Lütfen Oluşturmak İstediğiniz Noktanın Koordinatlarını Giriniz."
+      document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
+      var iptal_buton=document.createElement("button")
+      iptal_buton.innerText="İptal Et"
+      iptal_buton.onclick=function(){
+        document.getElementById("sayfamesajlari").innerText="İşlem İptal Edilmiştir"
+        document.getElementById('obje_girdi').innerHTML=""
+        bekleme()
+      }
+      document.getElementById("sayfamesajlari").appendChild(iptal_buton)  
+    }
+    var islemi_bitir=document.createElement("button")
+    islemi_bitir.innerText="Kapat"
+    document.getElementById('sayfamesajlari').innerText=a+" Katmanı Oluşturuldu.\nÇizime Başlayabilirsiniz.";
+    document.getElementById('sayfamesajlari').appendChild(document.createElement("br"))
+    document.getElementById('sayfamesajlari').appendChild(koordinat_gir_buton)
+    document.getElementById('sayfamesajlari').appendChild(islemi_bitir)
     document.getElementById('sayfamesajlari').style.backgroundColor  = "black";
     //harita üzerinde tıklama olayı ile koordinat almanın etkinleştirilmesi
       map.on('click', (e)=>{
@@ -103,40 +126,14 @@ function create_point(a){
       window[a].oznitelikgoruntulemeveduzenleme();
       bekleme(); //sayfa mesajlarındaki yazının kaybolması
       map.off('click');  //tıklama ile point eklemenin pasifleştiirlmesi
-    }) 
-     // klavye kısayollarının etkinleştirilmesi
-    document.addEventListener('keydown', function abc(event)  {
-    var code = event.code;
-
-    
-      // home tuşunun basılması durumunda elle korodinat girme fonksiyonu çalıştırılır
-    if (code==="Home"){
-    document.getElementById('obje_girdi').style.backgroundColor = "black";
-    document.getElementById('obje_girdi').innerHTML='<label for="xbuton">E :</label><input type="number" maxlength="999999" id="xbuton" step="0.001" value="" required><br><label for="ybuton">B :</label><input type="number" maxlength="999999" id="ybuton" step="0.001" value="" required><input id="koordinatal" type="submit"  value="nokta oluştur">';
-    document.getElementById("koordinatal").setAttribute("onclick","koordinatileolustur('"+"olustur"+"')")
-    document.removeEventListener("keydown",abc)
-    }
-    // end tuşuna basılması durumunda nokta oluşturma işlemi tamamlanır
-    else if (code==="End") {
-    document.getElementById('sayfamesajlari').style.backgroundColor = "black";
-    document.getElementById('sayfamesajlari').innerText = "İşlem Tamamlandı";
-    document.removeEventListener("keydown",abc)
-    bekleme();
-    }
-    else{
-      document.removeEventListener("keydown",abc)
-      bekleme();
-    }
-    });
+    })
   }
   
   //-------------------------------------------------------------------------------------------------------------------------------------
     // koordinat girerek nokta oluşturma
   function koordinatileolustur(n,q){
-    console.log(n,q)
     var w = n
     var q = q
-    console.log(window[q])
   if (w==="olustur"){
       var x = document.getElementById('xbuton').value;
       var y = document.getElementById('ybuton').value;
@@ -315,9 +312,13 @@ class point_object {
 
       }
       // ---------------------objeye yaklaşmak için aşağıdaki fonksiyon kullanılır
-      objeyeyaklas(){
-        map.flyTo(this.coordinates_bound,14)
-
+      async objeyeyaklas(){
+        map.flyTo(this.coordinates_bound,15,{
+          animate:false
+        }
+        )
+        await sleep(5000)
+        map.stop()
 //
     }
     katmanduzenle(t){

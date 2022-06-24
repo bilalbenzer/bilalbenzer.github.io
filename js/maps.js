@@ -173,7 +173,8 @@ var mapoptions = {
   center: [38.9637,35.2433],
   zoom: 7,
   zoomControl: false,
-  drawControl: true,}
+  drawControl: true,
+  zoomAnimation:false}
 var map =L.map('map_screen',
   mapoptions
 )
@@ -288,6 +289,7 @@ function tilelayer_yenile(x){
 function show_coordints() { 
   if (gecerli_koordinat==="EPSG:3857"){
       map.flyTo([38.9637,35.2433],7)  //koordinat sistemi değiştirilirse otomatik olarak Türkiye görünüme harita yenlienir
+      map.stop()
       map.clearAllEventListeners()
       map.on('mousemove' , (e) =>{
         document.getElementById('coordinat_tab').innerText ="Enlem:"+(e.latlng.lat).toFixed(8) +"------"+ "Boylam:"+(e.latlng.lng).toFixed(8);
@@ -297,6 +299,7 @@ function show_coordints() {
     for (m in koordinat_sistemleri){
       if (gecerli_koordinat===m){
           map.flyTo([38.9637,35.2433],4)  //koordinat sistemi değiştirilirse otomatik olarak Türkiye görünüme harita yenlienir
+          map.stop()
           map.clearAllEventListeners()   
           map.on('mousemove' , (e) =>{
             var latlng = e.latlng;
@@ -308,16 +311,20 @@ function show_coordints() {
     }
   }
 }
-function haritayi_yenile(){
+async function haritayi_yenile(){
   var x = gecerli_tilelayer
   remove_tile_layer(x)
   add_tilelayer(x)
   if (gecerli_koordinat==="EPSG:3857"){
-    map.flyTo([38.9637,35.2433],7)}
-  else{
-    map.flyTo([38.9637,35.2433],4)
+    map.flyTo([38.9637,35.2433],7)
   }
-  
+  else{
+    map.flyTo([38.9637,35.2433],4,{
+      animate:false
+    })
+  }
+  await sleep(5000)
+  map.stop()
 }
 const map_layers = []
 const map_layers_tum= []
