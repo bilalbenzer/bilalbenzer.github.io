@@ -306,14 +306,14 @@ class multi_point {
     document.getElementById("sayfamesajlari").innerText = objeler_yazi
     bekleme()
   }
-  objetasi(object_id_ve_renk,class_id){
+   objetasi(object_id_ve_renk,class_id){
     var z = object_id_ve_renk
     this.tum_ozellikler.featuregroup.removeLayer(this.tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].feature)
     var eski_x=window[class_id].tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"]
     var eski_y=window[class_id].tum_ozellikler.objeler["'"+Object.keys(z)[0]+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"]
     var eski_koordinatlar = [eski_x,eski_y]
     document.getElementById("sayfamesajlari").innerText="Taşıma İşlemi Başladı.Taşımak İstediğiniz yere Fare İmlecini Sürükleyerek ve Tıklayarak Bırakın.\nKoordinat Girerek Taşıma İşlemini Gerçekleştirmek İçin 'Home' Tuşuna Basınız."
-    map.on('mousemove' ,async function tasima(tasi){
+    map.addEventListener('mousemove' ,async function tasima(tasi){
       var x = (tasi.latlng.lat).toFixed(8)
       var y=(tasi.latlng.lng).toFixed(8)
       var object_id = Object.keys(z)[0]
@@ -329,8 +329,8 @@ class multi_point {
       await sleep(100)
       window[class_id].tum_ozellikler.featuregroup.removeLayer(asd)
       map.on('click',function tiktik(birak){
-        map.off('mousemove',tasima)
-        map.off('click',tiktik)
+        map.off('click')
+        
         var x1 = (birak.latlng.lat).toFixed(8)
         var y1 = (birak.latlng.lng).toFixed(8)
         var object_id2=Object.keys(z)[0]
@@ -351,23 +351,22 @@ class multi_point {
             return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+object_id2+"'"].bicim.bicim)
           } 
         }).addTo(window[class_id].tum_ozellikler.featuregroup)
-      document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"+bekleme()
+      document.getElementById("sayfamesajlari").innerText="\n"+object_id2 + " Noktası "+x1+"---"+y1+" Koordinatına Başarıyla Taşındı.\n"+bekleme()+map.removeEventListener('mousemove',tasima)
       window[class_id].objeyiyenile()
       })
     })
 
-
     document.addEventListener('keydown', function koordinatal_event(event)  {
       if(event.key==="Home"){
+        map.off('click')
         window[class_id].objeyitasi_koordinatile(object_id_ve_renk,class_id)
         document.removeEventListener('keydown',koordinatal_event)
+      }
+      else{
       }
       })
   }
   objeyitasi_koordinatile(object_id_ve_renk,class_id){
-    map.off("mousemove")
-    map.off('click')
-    show_coordints()
     document.getElementById("sayfamesajlari").innerText="Manuel Koordinat Girme İşlemi Başladı. Lütfen Uygun Enlem ve Boylamı Giriniz."
     document.getElementById('obje_girdi').style.backgroundColor = "black";
     var label1 = document.createElement("label")
@@ -425,4 +424,8 @@ class multi_point {
 }
   oznitelikpenceresikapat(){}
 
+}
+
+async function sureli_bekleme(x){
+  await sleep(x)
 }
