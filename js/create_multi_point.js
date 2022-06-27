@@ -422,7 +422,270 @@ class multi_point {
   document.getElementById("sayfamesajlari").innerText=object_id2+" Noktası, Başarılı Bir Şekilde " + x1+"----"+y1+" Koordinatlarına Taşındı."
   
 }
-  oznitelikpenceresikapat(){}
+oznitelikgoruntulemeveduzenleme(){
+  // öznitelik penceresinin en üstünde, obje featureid i ve kapat butonu eklenmesi
+  document.getElementById("oznitelikpenceresi").innerText="";
+  var ustsekme=document.createElement("div");
+  ustsekme.innerText=this.tum_ozellikler.id_nosu;
+  ustsekme.setAttribute("id",this.tum_ozellikler.id_nosu+"kapat");
+  ustsekme.style.height="30px";
+  ustsekme.style.backgroundColor="white";
+  ustsekme.style.border="5px solid black";
+  ustsekme.style.textAlign="center";
+  ustsekme.style.fontSize="large";
+  ustsekme.style.fontWeight="bolder";
+  var kapatbuton=document.createElement("button");
+  kapatbuton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikpenceresikapat()");
+  kapatbuton.setAttribute("value","Kapat");
+  kapatbuton.style.width="100px";
+  kapatbuton.style.height="30px";
+  kapatbuton.innerText="Kapat";
+  kapatbuton.style.float="right";
+  document.getElementById("oznitelikpenceresi").appendChild(ustsekme);
+  document.getElementById(this.tum_ozellikler.id_nosu+"kapat").appendChild(kapatbuton);
+  // özniteliklerin eklenmesi için, öznitelik değişkenindeki tüm keyler for ile döner ve teker teker eklenir
+  var obje_key = Object.keys(this.tum_ozellikler.objeler)[0].replace(/'/g,"")
+  var kolonlar = this.tum_ozellikler.objeler["'"+obje_key+"'"].geometrioznitelik.properties
+  var kolonlarin_divi = document.createElement("div")
+  kolonlarin_divi.style.width="auto"
+  kolonlarin_divi.style.height="180px"
+  kolonlarin_divi.style.overflowY="scroll"
+  kolonlarin_divi.setAttribute("id","kolonlarindivi")
+  document.getElementById("oznitelikpenceresi").appendChild(kolonlarin_divi)
+  for (var c in Object.keys(kolonlar)){
+    var kolonun_adi = Object.keys(kolonlar)[c].toString()
+    var kolon = document.createElement("div");
+          kolon.setAttribute("id","'"+kolonun_adi+"'")
+          kolon.style.width="auto";
+          kolon.style.height="180px";
+          kolon.style.float="left";
+          kolon.style.backgroundColor="black";
+          kolon.style.fontSize="medium";
+          kolon.style.fontWeight="bold";
+          var kolonmenu = document.createElement("details")
+          kolonmenu.setAttribute("id","'"+kolonun_adi+"'"+"_details");
+          kolonmenu.style.width="140px";
+          kolonmenu.style.height="50px";
+          var kolonmenu_summary=document.createElement("summary");
+          kolonmenu_summary.innerText=kolonun_adi;
+          kolonmenu_summary.style.cursor="pointer";
+          kolonmenu_summary.style.listStyle="none";
+          kolonmenu_summary.style.color="red";
+          kolonmenu_summary.style.backgroundColor="black";
+          kolonmenu_summary.style.width="140px";
+          kolonmenu_summary.style.height="50px";
+          kolonmenu_summary.setAttribute("id","'"+kolonun_adi+"'"+"_summary");
+          document.getElementById("kolonlarindivi").appendChild(kolon);
+          document.getElementById("'"+kolonun_adi+"'").appendChild(kolonmenu);
+          document.getElementById("'"+kolonun_adi+"'_details").appendChild(kolonmenu_summary);
+    var menudiv=document.createElement("div");
+            menudiv.setAttribute("id","'"+kolonun_adi+"'"+"menudiv");
+            menudiv.style.width="200px";
+            menudiv.style.height="110px";
+            menudiv.style.border="red solid 5px";
+            menudiv.style.marginLeft="0px";
+            menudiv.style.position="absolute";
+            menudiv.style.backgroundColor="black";
+            var kolonmenu_duzenle=document.createElement("button");
+            kolonmenu_duzenle.setAttribute("value","Düzenle");
+            kolonmenu_duzenle.innerText="Düzenle";
+            var kolonmenu_sil=document.createElement("button");
+            kolonmenu_sil.setAttribute("value","Sil");
+            kolonmenu_sil.innerText="Sil";
+            var kolonmenu_ozellikler=document.createElement("button");
+            kolonmenu_ozellikler.setAttribute("value","Özellikler");
+            kolonmenu_ozellikler.innerText="Özellikler";
+            var saga_kolon_ekle=document.createElement("button");
+            saga_kolon_ekle.setAttribute("value","Sağına Kolon Ekle");
+            saga_kolon_ekle.innerText="Sağına Kolon Ekle";
+            saga_kolon_ekle.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].sagakolonekle('"+kolonun_adi+"')");
+            kolonmenu_ozellikler.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikmenuozellikler('"+kolonun_adi+"')");
+            // featureid, Geometri Tipi, X Koordinatı(Enlem) ve Y Koordinatı(Boylam) öznitelikleri değiştirilemez niteliklerdir. Bu yüzden bu 
+            // niteliklerin kolon adı ve niteliği değiştirilemez.
+            if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı(Enlem)" && kolonun_adi !== "Y Koordinatı(Boylam)"){
+  
+              kolonmenu_duzenle.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikkolonduzenle('"+kolonun_adi+"')");
+              kolonmenu_sil.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikkolonsil('"+kolonun_adi+"')");
+              
+            }
+            else{
+              kolonmenu_duzenle.setAttribute("onclick","alert('"+kolonun_adi+"' +' kolonu düzenlenemez')");
+              kolonmenu_sil.setAttribute("onclick","alert('"+kolonun_adi+"'+' kolonu düzenlenemez')");
+            }
+            document.getElementById("'"+kolonun_adi+"'"+"_details").appendChild(menudiv);
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(kolonmenu_duzenle);
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(document.createElement("br"));
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(kolonmenu_sil);
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(document.createElement("br"));
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(kolonmenu_ozellikler);
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(document.createElement("br"));
+            document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(saga_kolon_ekle);
+            document.getElementById("'"+kolonun_adi+"'").appendChild(document.createElement("br"));
+      for (var k in Object.keys(this.tum_ozellikler.objeler_ve_id_nolari)){
+      var object_namee = Object.values(this.tum_ozellikler.objeler_ve_id_nolari)[k]
+
+      var kolonicerik_detail=document.createElement("details");
+      kolonicerik_detail.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail");
+      kolonicerik_detail.style.width="140px";
+      kolonicerik_detail.style.height="50px";
+      var kolon_icerik_name = document.createElement("summary");
+      var genislik = document.getElementById("'"+kolonun_adi+"'").getElementsByTagName("details")[0].clientWidth;
+      kolon_icerik_name.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_iceriksummary");
+      kolon_icerik_name.innerText=this.tum_ozellikler.objeler["'"+object_namee+"'"].geometrioznitelik.properties[kolonun_adi]
+      kolon_icerik_name.style.color="white";
+      kolon_icerik_name.style.width="140px";
+      kolon_icerik_name.style.height="50px";
+      kolon_icerik_name.style.cursor="pointer";
+      kolon_icerik_name.style.listStyle="none";
+      kolon_icerik_name.style.backgroundColor="black";
+      document.getElementById("'"+kolonun_adi+"'").appendChild(kolonicerik_detail);
+      document.getElementById("'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail").appendChild(kolon_icerik_name);
+      var kolonicerik_menu=document.createElement("button");
+      kolonicerik_menu.innerText="Düzenle";
+      kolonicerik_menu.style.width="auto";
+      kolonicerik_menu.style.height="auto";
+      kolonicerik_menu.style.border="solid red 5px";
+      kolonicerik_menu.style.marginLeft="0px";
+      kolonicerik_menu.style.position="absolute";
+      kolonicerik_menu.style.color="white";
+      kolonicerik_menu.style.backgroundColor="black";
+      kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].kolonicerikdegistir('"+kolonun_adi+"')");
+      if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı(Enlem)" && kolonun_adi !== "Y Koordinatı(Boylam)"){
+        kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir('"+kolonun_adi+"')");
+      }
+      else{
+        kolonicerik_menu.setAttribute("onclick","alert('"+kolonun_adi+"'+' kolonu düzenlenemez')");
+      }
+      document.getElementById("'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail").appendChild(kolonicerik_menu);
+    }
+
+    
+  }
+}
+  oznitelikkolonduzenle(kolon_adi){
+
+  }
+  sagakolonekle(kolon_adi){
+//bilgilerin sayfa mesajlarına yazılması
+      var sayfamesajlari=document.getElementById("sayfamesajlari");
+      sayfamesajlari.style.backgroundColor="black";
+      sayfamesajlari.innerText="";
+      var labelbir = document.createElement("label");
+      labelbir.innerText="Kolon Adı:";
+      labelbir.setAttribute("for","kolonadiduzenle");
+      var kolonadigir=document.createElement("input");
+      kolonadigir.setAttribute("id","kolonadiduzenle");
+      kolonadigir.setAttribute("type","Kolon Adı");
+      sayfamesajlari.appendChild(labelbir);
+      sayfamesajlari.appendChild(kolonadigir);
+      sayfamesajlari.appendChild(document.createElement("br"));
+      // veri tipinin seçimi
+      var div_tip=document.createElement("div");
+      div_tip.setAttribute("id","tipsecim");
+      var labeliki=document.createElement("label");
+      labeliki.innerText="Veri Tipi:";
+      labeliki.setAttribute("for","cevap");
+      var veritip_bir=document.createElement("input");
+      veritip_bir.setAttribute("type","radio");
+      veritip_bir.setAttribute("class","cevap");
+      veritip_bir.setAttribute("name","cevap1");
+      veritip_bir.setAttribute("value","text");
+      var veritip_iki=document.createElement("input");
+      veritip_iki.setAttribute("type","radio");
+      veritip_iki.setAttribute("class","cevap");
+      veritip_iki.setAttribute("name","cevap1");
+      veritip_iki.setAttribute("value","tam sayı");
+      var veritip_uc=document.createElement("input");
+      veritip_uc.setAttribute("type","radio");
+      veritip_uc.setAttribute("class","cevap");
+      veritip_uc.setAttribute("name","cevap1");
+      veritip_uc.setAttribute("value","ondalıklı sayı");
+      sayfamesajlari.appendChild(div_tip);
+      document.getElementById("tipsecim").appendChild(document.createTextNode("Metin"));
+      document.getElementById("tipsecim").appendChild(veritip_bir);
+      document.getElementById("tipsecim").appendChild(document.createTextNode("Tam Sayı"));
+      document.getElementById("tipsecim").appendChild(veritip_iki);
+      document.getElementById("tipsecim").appendChild(document.createTextNode("Ondalıklı Sayı"));
+      document.getElementById("tipsecim").appendChild(veritip_uc);
+      document.getElementById("tipsecim").appendChild(document.createElement("br"));
+      var nitelikalmalabeli=document.createElement("label");
+      nitelikalmalabeli.setAttribute("for","nitelikalma");
+      nitelikalmalabeli.innerText="Nitelik: (Secilen Veri Tipine Dikkat Ediniz";
+      var nitelikalmainput=document.createElement("input");
+      nitelikalmainput.setAttribute("id","nitelikalma");
+      nitelikalmainput.setAttribute("value","Nitelik");
+      document.getElementById("tipsecim").appendChild(nitelikalmalabeli);
+      document.getElementById("tipsecim").appendChild(document.createElement("br"));
+      document.getElementById("tipsecim").appendChild(nitelikalmainput);
+      document.getElementById("tipsecim").appendChild(document.createElement("br"));
+      //ekle butonu
+      var uygula_buton=document.createElement("input");
+      uygula_buton.setAttribute("type","submit");
+      uygula_buton.innerText="Ekle";
+      uygula_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].sagakolonekleson('"+kolon_adi+"')");
+      document.getElementById("tipsecim").appendChild(uygula_buton);
+      }
+
+      sagakolonekleson(kolon_adi){
+      var kolonadi = document.getElementById("kolonadiduzenle").value;
+      var kolonniteligi=document.getElementById("nitelikalma").value;
+      var key_list=Object.keys(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties);
+      var iii;
+      try {
+          if (document.querySelector('input[name = cevap1]:checked').value==="text"){
+            kolonniteligi=kolonniteligi.toString();
+          }
+          else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
+            kolonniteligi=parseInt(kolonniteligi);
+            if (isNaN(kolonniteligi)){
+              kolonniteligi=null;
+            }
+          }
+          else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
+            kolonniteligi=parseFloat(kolonniteligi);
+            if (isNaN(kolonniteligi)){
+              kolonniteligi=null;
+            }
+          }
+          for (iii in key_list){
+            if (key_list[iii]===kolon_adi){
+              var kolonindexi=parseInt(iii)+1;
+              for (var j in this.tum_ozellikler.objeler_ve_id_nolari){
+              var keyValues=Object.entries(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties);
+              keyValues.splice(kolonindexi,0,[kolonadi,null]);
+              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
+              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);}
+            }
+          }
+          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+          }
+          catch(err){
+            for (iii in key_list){
+            if (key_list[iii]===kolon_adi){
+              var kolonindexi=parseInt(iii)+1;
+              for (var j in this.tum_ozellikler.objeler_ve_id_nolari){
+              var keyValues=Object.entries(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties);
+              keyValues.splice(kolonindexi,0,[kolonadi,null]);
+              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
+              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);
+            }}
+          }
+            console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
+            window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+            window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+          }
+      }
+  oznitelikkolonsil(kolon_adi){
+    console.log(kolon_adi)
+  }
+  oznitelikmenuozellikler(kolon_adi){
+    console.log(kolon_adi)
+  }
+  oznitelikpenceresikapat(){
+    document.getElementById("oznitelikpenceresi").innerText="";
+    document.getElementById("oznitelikpenceresi").backgroundColor="unset"
+  }
 
 }
 

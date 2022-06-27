@@ -1,11 +1,22 @@
-/*Nokta Oluşturma Aşamaları-leaflette:
-1- haritada tıklanılan yerden koordinatı alır ve point oluşturur /// elle koordinat girerek de oluşturulabilir
-2- oluşturlan point haritaya eklenir
+/*Nokta Oluşturma Aşamaları
+1-Kullanıcıdan öncelikle katman adı girilmesi istenir. Girilen katman adının uygunluğu kontrol edilir. 
+2-Katman adı uygun ise haritada tıklama olayı ile veya maanuel koordinat girerek nokta oluşturulur.
+3-Nokta oluşturulduğu gibi haritaya eklenir ve noktaya ait class oluşturulur
+4- Class oluşturulduğu an, vektör penceresine eklenir ve menüleri oluşturulur
+5- obje istenildiği an haritada gizlenebilir ve tekrar gösterilebilir.
+6-istenilen anda objeye yakınlaşılabilir
+7-objenin stili nokta veya simge olarak seçiiebilir. büyüklük, saydamlık ayarlanabilir
+8-objeye ait öznitelik bilgisi eklenebilir ve düzenlenebilir
+
 */
+
+/* Uygun olmayan karakterlerin girilmemesi için harflerden oluşan liste */
 var alfabe_harfler = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t","u","v","x","w","y","z",
                       "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T","U","X","W","Y","Y","Z",
-                    "1","2","3","4","5","6","7","8","9","0"]
+                    "1","2","3","4","5","6","7","8","9","0"]  
 var sayilar =["1","2","3","4","5","6","7","8","9","0"]  
+
+/* Katman oluşturulurken kullanıcıdan katman adı girilmesi */
 function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıdan katman adı istenir.
   document.getElementById("create_object").open = false
   document.getElementById("sayfamesajlari").style.backgroundColor="black";
@@ -33,6 +44,8 @@ function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıda
   document.getElementById("sayfamesajlari").appendChild(isimgonder);
   document.getElementById("sayfamesajlari").appendChild(kapat)
 }
+
+/* Kullanıcıdan gelen katman isminin uygunluğunun kontrolü */
 function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir kontrolden geçer. Katman Adı boşluk-rakam veya özel karakterle başlayamaz. İçerisinde özel karakter ve boşluk içeremez.
                         //aykırı bir durumda kullanıcıya uyarı verilir ve tekrar giriş penceresi açılır
   var layer_demo_name = document.getElementById("isimal").value
@@ -84,6 +97,8 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
         }
     }
 }
+
+/* nokta objesinin oluşturulacağı fonksiyon */
 function create_point(a){
     document.getElementById("oznitelikpenceresi").innerHTML="";
     var a = a
