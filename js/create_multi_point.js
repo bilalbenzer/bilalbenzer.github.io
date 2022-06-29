@@ -206,6 +206,14 @@ class multi_point {
       tilelayer_yenile(gecerli_tilelayer)
     }
   }
+  seciliobjeyeyaklas(object_name){
+    map.flyTo([this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"],this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"]],15,{
+      animate:false
+    })
+    tilelayer_yenile(gecerli_tilelayer)
+    window[this.tum_ozellikler.id_nosu].objeyiyenile()
+    
+  }
   katmanduzenle(x){ //katmanda düzenleme işlemleri için metot. haritada click olayı açılarak obje seçilir. seçilen obje açık mavi renk alır ve işlemlere başlanır
     document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Katmanlara Tıklayarak Seçebilirsiniz.\nTaşıma İşlemi İçin Lütfen 1 Obje Seçiniz.\nToplu Değişiklikler Olarak Silme İşlemi Gerçekleştirilebilir\nSeçme İşlemini SOnladırmak İçin 'N' Tuşuna Basınız."
     document.getElementById('sayfamesajlari').style.backgroundColor = "black";
@@ -452,6 +460,20 @@ oznitelikgoruntulemeveduzenleme(){
   kolonlarin_divi.style.overflowY="scroll"
   kolonlarin_divi.setAttribute("id","kolonlarindivi")
   document.getElementById("oznitelikpenceresi").appendChild(kolonlarin_divi)
+  var objeyaklasmadivi = document.createElement("div");
+  objeyaklasmadivi.setAttribute("id","objeyeyaklasma")
+  objeyaklasmadivi.style.width="50px";
+  objeyaklasmadivi.style.height="auto";
+  objeyaklasmadivi.style.float="left";
+  objeyaklasmadivi.style.backgroundColor="black";
+  objeyaklasmadivi.style.fontSize="medium";
+  objeyaklasmadivi.style.fontWeight="bold";
+  document.getElementById("kolonlarindivi").appendChild(objeyaklasmadivi);
+  var objeyaklasmailksutun = document.createElement("div")
+  objeyaklasmailksutun.style.width="50px";
+  objeyaklasmailksutun.style.height="50px";
+  objeyaklasmailksutun.style.backgroundColor="black"
+  document.getElementById("objeyeyaklasma").appendChild(objeyaklasmailksutun);
   for (var c in Object.keys(kolonlar)){
     var kolonun_adi = Object.keys(kolonlar)[c].toString()
     var kolon = document.createElement("div");
@@ -489,12 +511,15 @@ oznitelikgoruntulemeveduzenleme(){
             var kolonmenu_duzenle=document.createElement("button");
             kolonmenu_duzenle.setAttribute("value","Düzenle");
             kolonmenu_duzenle.innerText="Düzenle";
+            kolonmenu_duzenle.setAttribute("id","'"+kolonun_adi+"'"+"_duzenle")
             var kolonmenu_sil=document.createElement("button");
             kolonmenu_sil.setAttribute("value","Sil");
             kolonmenu_sil.innerText="Sil";
+            kolonmenu_sil.setAttribute("id","'"+kolonun_adi+"'"+"_sil")
             var kolonmenu_ozellikler=document.createElement("button");
             kolonmenu_ozellikler.setAttribute("value","Özellikler");
             kolonmenu_ozellikler.innerText="Özellikler";
+            kolonmenu_ozellikler.setAttribute("id","'"+kolonun_adi+"'"+"_ozellikler")
             var saga_kolon_ekle=document.createElement("button");
             saga_kolon_ekle.setAttribute("value","Sağına Kolon Ekle");
             saga_kolon_ekle.innerText="Sağına Kolon Ekle";
@@ -502,15 +527,19 @@ oznitelikgoruntulemeveduzenleme(){
             kolonmenu_ozellikler.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikmenuozellikler('"+kolonun_adi+"')");
             // featureid, Geometri Tipi, X Koordinatı(Enlem) ve Y Koordinatı(Boylam) öznitelikleri değiştirilemez niteliklerdir. Bu yüzden bu 
             // niteliklerin kolon adı ve niteliği değiştirilemez.
-            if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı(Enlem)" && kolonun_adi !== "Y Koordinatı(Boylam)"){
+            if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı (Enlem)" && kolonun_adi !== "Y Koordinatı (Boylam)"){
   
               kolonmenu_duzenle.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikkolonduzenle('"+kolonun_adi+"')");
               kolonmenu_sil.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikkolonsil('"+kolonun_adi+"')");
               
             }
             else{
-              kolonmenu_duzenle.setAttribute("onclick","alert('"+kolonun_adi+"' +' kolonu düzenlenemez')");
-              kolonmenu_sil.setAttribute("onclick","alert('"+kolonun_adi+"'+' kolonu düzenlenemez')");
+              kolonmenu_duzenle.onclick=function(){
+                alert("Kolon Düzenlenemez.")
+            }              
+              kolonmenu_sil.onclick=function(){
+                alert("Kolon Düzenlenemez.")
+              }
             }
             document.getElementById("'"+kolonun_adi+"'"+"_details").appendChild(menudiv);
             document.getElementById("'"+kolonun_adi+"'"+"menudiv").appendChild(kolonmenu_duzenle);
@@ -523,7 +552,22 @@ oznitelikgoruntulemeveduzenleme(){
             document.getElementById("'"+kolonun_adi+"'").appendChild(document.createElement("br"));
       for (var k in Object.keys(this.tum_ozellikler.objeler_ve_id_nolari)){
       var object_namee = Object.values(this.tum_ozellikler.objeler_ve_id_nolari)[k]
-
+      console.log(document.getElementById("'"+object_namee+"'_objeyaklasma"))
+      if(document.getElementById("'"+object_namee+"'_objeyaklasma")===null){
+          var objeyeyaklasbuton = document.createElement("button")
+          objeyeyaklasbuton.style.width="50px";
+          objeyeyaklasbuton.style.height="50px";
+          objeyeyaklasbuton.style.opacity="0.5"
+          objeyeyaklasbuton.style.backgroundImage="url(static/zoomin.png)"
+          objeyeyaklasbuton.style.backgroundSize="100%"
+          objeyeyaklasbuton.style.float="left"
+          objeyeyaklasbuton.style.cursor="zoom-in"
+          objeyeyaklasbuton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].seciliobjeyeyaklas('"+object_namee+"')")
+          objeyeyaklasbuton.setAttribute("id","'"+object_namee+"'_objeyaklasma")
+          document.getElementById("objeyeyaklasma").appendChild(document.createElement("br"))
+          document.getElementById("objeyeyaklasma").appendChild(objeyeyaklasbuton)
+        }
+      
       var kolonicerik_detail=document.createElement("details");
       kolonicerik_detail.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail");
       kolonicerik_detail.style.width="140px";
@@ -531,7 +575,12 @@ oznitelikgoruntulemeveduzenleme(){
       var kolon_icerik_name = document.createElement("summary");
       var genislik = document.getElementById("'"+kolonun_adi+"'").getElementsByTagName("details")[0].clientWidth;
       kolon_icerik_name.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_iceriksummary");
+      if (this.tum_ozellikler.objeler["'"+object_namee+"'"].geometrioznitelik.properties[kolonun_adi]==="text" || this.tum_ozellikler.objeler["'"+object_namee+"'"].geometrioznitelik.properties[kolonun_adi]==="tam sayı" || this.tum_ozellikler.objeler["'"+object_namee+"'"].geometrioznitelik.properties[kolonun_adi]==="ondalıklı sayı" ){
+        kolon_icerik_name.innerText=""
+      }
+      else{
       kolon_icerik_name.innerText=this.tum_ozellikler.objeler["'"+object_namee+"'"].geometrioznitelik.properties[kolonun_adi]
+      }
       kolon_icerik_name.style.color="white";
       kolon_icerik_name.style.width="140px";
       kolon_icerik_name.style.height="50px";
@@ -549,21 +598,154 @@ oznitelikgoruntulemeveduzenleme(){
       kolonicerik_menu.style.position="absolute";
       kolonicerik_menu.style.color="white";
       kolonicerik_menu.style.backgroundColor="black";
+      kolonicerik_menu.style.position="relative"
       kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].kolonicerikdegistir('"+kolonun_adi+"')");
+
       if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı(Enlem)" && kolonun_adi !== "Y Koordinatı(Boylam)"){
-        kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir('"+kolonun_adi+"')");
+        kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir('"+kolonun_adi+"','"+object_namee+"')");
       }
       else{
-        kolonicerik_menu.setAttribute("onclick","alert('"+kolonun_adi+"'+' kolonu düzenlenemez')");
+        kolonicerik_menu.onclick=function(){
+          alert("Kolon Düzenlenemez.")
+        }
       }
       document.getElementById("'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail").appendChild(kolonicerik_menu);
     }
-
-    
   }
 }
-  oznitelikkolonduzenle(kolon_adi){
 
+  oznitelikkolonduzenle(kolon_adi){
+        document.getElementById("'"+kolon_adi+"'_details").removeAttribute("open");
+        //bilgilerin sayfa mesajlarına yazılması
+        var sayfamesajlari=document.getElementById("sayfamesajlari");
+        sayfamesajlari.style.backgroundColor="black";
+        sayfamesajlari.innerText="";
+        var labelbir = document.createElement("label");
+        labelbir.innerText="Kolon Adı:";
+        labelbir.setAttribute("for","kolonadiduzenle");
+        var kolonadigir=document.createElement("input");
+        kolonadigir.setAttribute("id","kolonadiduzenle");
+        kolonadigir.setAttribute("type","Kolon Adı");
+        kolonadigir.setAttribute("value",kolon_adi);
+        sayfamesajlari.appendChild(labelbir);
+        sayfamesajlari.appendChild(kolonadigir);
+        sayfamesajlari.appendChild(document.createElement("br"));
+        // veri tipinin seçimi
+        var div_tip=document.createElement("div");
+        div_tip.setAttribute("id","tipsecim");
+        var labeliki=document.createElement("label");
+        labeliki.innerText="Veri Tipi:";
+        labeliki.setAttribute("for","cevap");
+        var veritip_bir=document.createElement("input");
+        veritip_bir.setAttribute("type","radio");
+        veritip_bir.setAttribute("class","cevap");
+        veritip_bir.setAttribute("name","cevap1");
+        veritip_bir.setAttribute("value","text");
+        var veritip_iki=document.createElement("input");
+        veritip_iki.setAttribute("type","radio");
+        veritip_iki.setAttribute("class","cevap");
+        veritip_iki.setAttribute("name","cevap1");
+        veritip_iki.setAttribute("value","tam sayı");
+        var veritip_uc=document.createElement("input");
+        veritip_uc.setAttribute("type","radio");
+        veritip_uc.setAttribute("class","cevap");
+        veritip_uc.setAttribute("name","cevap1");
+        veritip_uc.setAttribute("value","ondalıklı sayı");
+        sayfamesajlari.appendChild(div_tip);
+        document.getElementById("tipsecim").appendChild(document.createTextNode("Metin"));
+        document.getElementById("tipsecim").appendChild(veritip_bir);
+        document.getElementById("tipsecim").appendChild(document.createTextNode("Tam Sayı"));
+        document.getElementById("tipsecim").appendChild(veritip_iki);
+        document.getElementById("tipsecim").appendChild(document.createTextNode("Ondalıklı Sayı"));
+        document.getElementById("tipsecim").appendChild(veritip_uc);
+        document.getElementById("tipsecim").appendChild(document.createElement("br"));
+        var uygula_buton=document.createElement("input");
+        uygula_buton.setAttribute("type","submit");
+        uygula_buton.innerText="Uygula";
+        uygula_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikdegisiklikuygula('"+kolon_adi+"')");
+        document.getElementById("tipsecim").appendChild(uygula_buton);
+  }
+  oznitelikdegisiklikuygula(kolon_adi){
+    var yeni_kolon_ad = document.getElementById("kolonadiduzenle").value;
+    document.getElementById("sayfamesajlari").innerText=""
+    if (yeni_kolon_ad!==kolon_adi && yeni_kolon_ad!==""){
+      for (var o in this.tum_ozellikler.objeler_ve_id_nolari){
+        var object_name = this.tum_ozellikler.objeler_ve_id_nolari[o]
+        this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
+        delete this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
+
+      try {
+        var veri_tip=document.querySelector('input[name = cevap1]:checked').value;
+        if (document.querySelector('input[name = cevap1]:checked').value==="text"){
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad].toString();
+        }
+        else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseInt(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]);
+          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])){
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null;
+          }
+        }
+        else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseFloat(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]);
+          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])){
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null;
+          }
+        }
+        window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+        window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+        bekleme();
+        }
+        
+        catch(err){
+          console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik[yeni_kolon_ad];
+          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+          bekleme();
+        }
+      }
+    }
+    else if (yeni_kolon_ad===""){
+      alert("Kolon Adı Boş Bırakılamaz.");
+      bekleme();
+    }
+    else{
+      for (var o in this.tum_ozellikler.objeler_ve_id_nolari){
+        var object_name = this.tum_ozellikler.objeler_ve_id_nolari[o]
+      try {
+        var veri_tip=document.querySelector('input[name = cevap1]:checked').value;
+        if (document.querySelector('input[name = cevap1]:checked').value==="text"){
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi].toString();
+        }
+        else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
+          tthis.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=parseInt(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]);
+          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi])){
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=null;
+          }
+        }
+        else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=parseFloat(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]);
+          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi])){
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=null;
+          }
+        }
+        window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+        window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+        bekleme();
+        }
+        catch(err){
+          console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi];
+          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+          bekleme();
+        }
+    }
+  }
+
+  }
+  kolonicerikdegistir(kolon_adi){
+    
   }
   sagakolonekle(kolon_adi){
 //bilgilerin sayfa mesajlarına yazılması
@@ -608,16 +790,6 @@ oznitelikgoruntulemeveduzenleme(){
       document.getElementById("tipsecim").appendChild(document.createTextNode("Ondalıklı Sayı"));
       document.getElementById("tipsecim").appendChild(veritip_uc);
       document.getElementById("tipsecim").appendChild(document.createElement("br"));
-      var nitelikalmalabeli=document.createElement("label");
-      nitelikalmalabeli.setAttribute("for","nitelikalma");
-      nitelikalmalabeli.innerText="Nitelik: (Secilen Veri Tipine Dikkat Ediniz";
-      var nitelikalmainput=document.createElement("input");
-      nitelikalmainput.setAttribute("id","nitelikalma");
-      nitelikalmainput.setAttribute("value","Nitelik");
-      document.getElementById("tipsecim").appendChild(nitelikalmalabeli);
-      document.getElementById("tipsecim").appendChild(document.createElement("br"));
-      document.getElementById("tipsecim").appendChild(nitelikalmainput);
-      document.getElementById("tipsecim").appendChild(document.createElement("br"));
       //ekle butonu
       var uygula_buton=document.createElement("input");
       uygula_buton.setAttribute("type","submit");
@@ -627,35 +799,34 @@ oznitelikgoruntulemeveduzenleme(){
       }
 
       sagakolonekleson(kolon_adi){
+
       var kolonadi = document.getElementById("kolonadiduzenle").value;
-      var kolonniteligi=document.getElementById("nitelikalma").value;
+      var veri_tip = document.querySelector('input[name = cevap1]:checked').value
+      document.getElementById("sayfamesajlari").innerText=""
       var key_list=Object.keys(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties);
+      var asdsad=-1
       var iii;
       try {
-          if (document.querySelector('input[name = cevap1]:checked').value==="text"){
-            kolonniteligi=kolonniteligi.toString();
-          }
-          else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
-            kolonniteligi=parseInt(kolonniteligi);
-            if (isNaN(kolonniteligi)){
-              kolonniteligi=null;
-            }
-          }
-          else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
-            kolonniteligi=parseFloat(kolonniteligi);
-            if (isNaN(kolonniteligi)){
-              kolonniteligi=null;
-            }
-          }
           for (iii in key_list){
             if (key_list[iii]===kolon_adi){
               var kolonindexi=parseInt(iii)+1;
               for (var j in this.tum_ozellikler.objeler_ve_id_nolari){
+
               var keyValues=Object.entries(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties);
               keyValues.splice(kolonindexi,0,[kolonadi,null]);
               this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
-              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);}
+              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);
+              if (veri_tip==="text"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="text"
+              }
+              else if (veri_tip==="tam sayı"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="tam sayı"
+              }
+              else if (veri_tip==="ondalıklı sayı"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="ondalıklı sayı"
+              }
             }
+          }
           }
           window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
           window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
@@ -669,19 +840,135 @@ oznitelikgoruntulemeveduzenleme(){
               keyValues.splice(kolonindexi,0,[kolonadi,null]);
               this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
               this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);
+              if (veri_tip==="text"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="text"
+              }
+              else if (veri_tip==="tam sayı"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="tam sayı"
+              }
+              else if (veri_tip==="ondalıklı sayı"){
+                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="ondalıklı sayı"
+              }
             }}
           }
-            console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
             window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
             window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+            
           }
       }
   oznitelikkolonsil(kolon_adi){
-    console.log(kolon_adi)
+    for (var n in this.tum_ozellikler.objeler_ve_id_nolari){
+      var obje_name = this.tum_ozellikler.objeler_ve_id_nolari[n]
+      delete this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]
+    }
+    window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+    window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
   }
   oznitelikmenuozellikler(kolon_adi){
-    console.log(kolon_adi)
+    var sayfamesajlari=document.getElementById("sayfamesajlari");
+        sayfamesajlari.style.backgroundColor="black";
+        sayfamesajlari.innerText="";
+        var kolonadi=document.createElement("label");
+        kolonadi.innerText="Kolon Adı=     "+kolon_adi;
+        var kolontip=document.createElement("label");
+        console.log(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])
+        if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]===null){
+          if (this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="text"){
+            kolontip.innerText="Kolon Veri Tipi=     Metin";
+          }
+          else if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="tam sayı"){
+            kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
+          }
+          else if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="ondalıklı sayı"){
+            kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
+          }
+        }
+        else{
+        if (typeof this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="string" || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="text"){
+          kolontip.innerText="Kolon Veri Tipi=     Metin";
+        }
+        else if (Number.isInteger(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])===true || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="tam sayı"){
+          kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
+        }
+        else if ((typeof this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]!=="string" && Number.isInteger(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])===false) || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="ondalıklı sayı"){
+          kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
+        }
+      }
+        document.getElementById("sayfamesajlari").appendChild(kolonadi);
+        document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
+        document.getElementById("sayfamesajlari").appendChild(kolontip);
+        document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
+        var kapatbutonu=document.createElement("button");
+        kapatbutonu.setAttribute("value","Kapat");
+        kapatbutonu.setAttribute("onclick","bekleme()");
+        kapatbutonu.innerText="Kapat";
+        document.getElementById("sayfamesajlari").appendChild(kapatbutonu);
   }
+  oznitelikicerikdegistir(kolon_adi,obje_name){
+    console.log(kolon_adi)
+    console.log(obje_name)
+    var sayfamesajlari=document.getElementById("sayfamesajlari");
+    sayfamesajlari.innerText="";
+    sayfamesajlari.style.backgroundColor="black";
+    var kolonicerik_bilgi=document.createElement("label");
+    kolonicerik_bilgi.setAttribute("for","kolonicerikal");
+    var icerikalma=document.createElement("input");
+    icerikalma.setAttribute("id","kolonicerikal");
+    if(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]===null){
+      kolonicerik_bilgi.innerText="boş"
+      icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
+    }
+    else{
+    if (typeof this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]==="string"){
+      kolonicerik_bilgi.innerText="Kolon Veri Tipi: Metin";
+      icerikalma.setAttribute("type","text");
+      icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
+    }
+    else if (Number.isInteger(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]===true)){
+      kolonicerik_bilgi.innerText="Kolon Veri Tipi: Tam Sayı";
+      icerikalma.setAttribute("type","number");
+      icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
+    }
+    else if (typeof this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]!=="string" && Number.isInteger(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi])===false ){
+      kolonicerik_bilgi.innerText="Kolon Veri Tipi: Ondalıklı Sayı";
+      icerikalma.setAttribute("type","number");
+      icerikalma.setAttribute("step","0.001");
+      icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
+
+    }
+  }
+    sayfamesajlari.appendChild(kolonicerik_bilgi);
+    sayfamesajlari.appendChild(document.createElement("br"));
+    sayfamesajlari.appendChild(icerikalma);
+    var degistir_buton=document.createElement("input");
+    degistir_buton.setAttribute("type","submit");
+    degistir_buton.setAttribute("value","Değiştir");
+    degistir_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir_butonlaal('"+kolon_adi+"','"+kolonicerik_bilgi.innerText+"','"+obje_name+"')");
+    sayfamesajlari.appendChild(degistir_buton);
+  }
+  oznitelikicerikdegistir_butonlaal(kolon_adi,kolonicerigi,obje_name){
+
+    document.getElementById("'"+obje_name+"-"+kolon_adi+"'_kolonicerik_detail").removeAttribute("open")
+    var aaa=document.getElementById("kolonicerikal").value;
+    if(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]===null){
+      this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]=aaa
+    }
+    else{
+    if (kolonicerigi==="Kolon Veri Tipi: Metin"){
+      this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]=aaa.toString();
+    }
+    else if (kolonicerigi==="Kolon Veri Tipi: Tam Sayı"){
+      this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]=parseInt(aaa);
+    }
+    else if (kolonicerigi==="Kolon Veri Tipi: Ondalıklı Sayı"){
+      this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]=parseFloat(aaa);
+    }}
+  document.getElementById("'"+obje_name+"-"+kolon_adi+"'_iceriksummary").innerText=this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi];
+  
+
+  bekleme();
+  
+  }    
   oznitelikpenceresikapat(){
     document.getElementById("oznitelikpenceresi").innerText="";
     document.getElementById("oznitelikpenceresi").backgroundColor="unset"

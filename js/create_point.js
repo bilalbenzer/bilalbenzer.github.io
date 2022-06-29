@@ -951,30 +951,30 @@ class point_object {
       }
         
     oznitelikmenuozellikler(k){
-        var sayfamesajlari=document.getElementById("sayfamesajlari");
-        sayfamesajlari.style.backgroundColor="black";
-        sayfamesajlari.innerText="";
-        var kolonadi=document.createElement("label");
-        kolonadi.innerText="Kolon Adı=     "+k;
-        var kolontip=document.createElement("label");
-        if (typeof this.properties[k]==="string"){
-          kolontip.innerText="Kolon Veri Tipi=     Metin";
-        }
-        else if (Number.isInteger(this.properties[k])===true){
-          kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
-        }
-        else if (typeof this.properties[k]!=="string" && Number.isInteger(this.properties[k])===false ){
-          kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
-        }
-        document.getElementById("sayfamesajlari").appendChild(kolonadi);
-        document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
-        document.getElementById("sayfamesajlari").appendChild(kolontip);
-        document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
-        var kapatbutonu=document.createElement("button");
-        kapatbutonu.setAttribute("value","Kapat");
-        kapatbutonu.setAttribute("onclick","bekleme()");
-        kapatbutonu.innerText="Kapat";
-        document.getElementById("sayfamesajlari").appendChild(kapatbutonu);
+          var sayfamesajlari=document.getElementById("sayfamesajlari");
+          sayfamesajlari.style.backgroundColor="black";
+          sayfamesajlari.innerText="";
+          var kolonadi=document.createElement("label");
+          kolonadi.innerText="Kolon Adı=     "+k;
+          var kolontip=document.createElement("label");
+          if (typeof this.properties[k]==="string"){
+            kolontip.innerText="Kolon Veri Tipi=     Metin";
+          }
+          else if (Number.isInteger(this.properties[k])===true){
+            kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
+          }
+          else if (typeof this.properties[k]!=="string" && Number.isInteger(this.properties[k])===false ){
+            kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
+          }
+          document.getElementById("sayfamesajlari").appendChild(kolonadi);
+          document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
+          document.getElementById("sayfamesajlari").appendChild(kolontip);
+          document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
+          var kapatbutonu=document.createElement("button");
+          kapatbutonu.setAttribute("value","Kapat");
+          kapatbutonu.setAttribute("onclick","bekleme()");
+          kapatbutonu.innerText="Kapat";
+          document.getElementById("sayfamesajlari").appendChild(kapatbutonu);
       }
       oznitelikkolonsil(l){
         delete this.properties[l];

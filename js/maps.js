@@ -281,6 +281,7 @@ function remove_tile_layer(x){
   gecerli_tilelayer=""
 }
 function tilelayer_yenile(x){
+  console.log(x)
   var x=x
   remove_tile_layer(x)
   add_tilelayer(x)
