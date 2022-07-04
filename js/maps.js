@@ -333,3 +333,8 @@ const map_layers_id_nolari = []
 
 var x_noktasi
 var y_noktasi
+
+
+
+
+

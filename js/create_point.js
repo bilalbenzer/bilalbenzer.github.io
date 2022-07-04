@@ -49,15 +49,19 @@ function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıda
 function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir kontrolden geçer. Katman Adı boşluk-rakam veya özel karakterle başlayamaz. İçerisinde özel karakter ve boşluk içeremez.
                         //aykırı bir durumda kullanıcıya uyarı verilir ve tekrar giriş penceresi açılır
   var layer_demo_name = document.getElementById("isimal").value
+  /*  KULLANICIDAN GELEN KATMAN ADININ İLK HARFİ SAYI,ÖZEL KARAKTER, ÖÜİÇöçı GİBİ HARFLERİN OLUP OLMADIĞININ KONTROLÜ */
     if (alfabe_harfler.includes(layer_demo_name[0])===true && isNaN(parseFloat(layer_demo_name[0]))===true && typeof window[layer_demo_name]!=="object"){
       var kontrol_durum
+      // KULLANICIDAN GELEN KATMAN ADININ TÜM HARFLERİNİN KONTROLÜ
       for (var c in range(0,(layer_demo_name.length-1))){
+        //HARFLER TEKER TEKER KONTROLDEN GEÇER. ALFABE HARFLER LİSTESİNDE OLMAYAN HARFLER İÇİN UYARI VERİLİR
           if (alfabe_harfler.includes(layer_demo_name[c])===true){
             kontrol_durum="sorun yok"
           }
           else {
             alert("Girdiğiniz Katman Adı Özel Karakter ve Boşluk İçeremez.")
             kontrol_durum="sorun var"
+            //KULLANICIDAN TEKRAR KATMAN ADI GİRMESİ İÇİN ÖNCEKİ FNKSİYONA GÖNDERİLİR
             if (layer_name==="createpoint"){
             create_layer_name("createpoint")
             }
@@ -67,6 +71,7 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
             break
           }
         }
+        // KATMAN ADINDA SORUN YOKSA EĞER OBJE OLUŞTURMAYA YÖNLENDİRİLİR
       if (kontrol_durum==="sorun yok"){
         if (layer_name==="createpoint"){
           create_point(layer_demo_name)
@@ -187,6 +192,7 @@ function create_point(a){
                   break;
               }
             }
+            //FONKSİYONA EĞER DÜZENLEME PARAMETRESİ GELDİYSE İLGİLİ NOKTA MANUEL KOORDİNATLAR İLE YENİ YERİNE TAŞINIR
   else if(w==="duzenle"){
     var x = document.getElementById('xbuton').value;
     var y = document.getElementById('ybuton').value;
@@ -317,6 +323,7 @@ class point_object {
         map_layers.splice(map_layers.indexOf(a),1)
         map_layers.splice(map_layers.indexOf(b),1)
       }
+      /* KATMANIN SİLİNMESİ İÇİN KATMAN SİL FONKSİYONUNDAN SONRA HARİTADANSİL FONKSİYONU ÇALIŞIR */
       haritadansil(){
         map_layers_id_nolari.splice(map_layers_id_nolari.indexOf(this.id_nosu),1)
         var a =Object.keys(this.layer._layers)[0]
@@ -337,6 +344,7 @@ class point_object {
         map.stop()
 //
     }
+    /* KATMAN DÜZENLEME FONKSİYONU İLE BİR OBJE FARKLI BİR YERE TIKLAMA OLAYI İLE TAŞINABİLİR VEYA ELLE KOORDİNAT GİRİLEBİLİR */
     katmanduzenle(t){
       document.getElementById("sayfamesajlari").style.backgroundColor="black";
       document.getElementById("sayfamesajlari").innerText="Objenin Yeni Koordinatını Sol Tıklayarak Gösteriniz.\nManuel Koordinat Girmek İçin Home Tuşuna Basınız.\nBitirmek İçin End Tuşuna Basınız.";
@@ -399,6 +407,7 @@ class point_object {
         document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
         document.getElementById("sayfamesajlari").appendChild(kapatbuton);
       }
+      
       sembolgosterimiayarlari(){
         
         document.getElementById("sayfamesajlari").style.backgroundColor="black";

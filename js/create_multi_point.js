@@ -1,7 +1,7 @@
 
-function multi_create_point(a){
+function multi_create_point(katman_name){
   document.getElementById("oznitelikpenceresi").innerHTML="";
-  var name = a
+  var name = katman_name
   document.getElementById('sayfamesajlari').style.backgroundColor  = "black";
   document.getElementById('sayfamesajlari').innerText="Çoklu Point Katmanı oluşturuldu\n"+name;//sayfa mesajlarında objenin oluştuğuna dair bilgi
   //harita üzerinde tıklama olayı ile koordinat almanın etkinleştirilmesi
@@ -71,11 +71,14 @@ class multi_point {
         },
         "objeler_ve_id_nolari":[],  //oluşan objelerin id noları bu listede tutulacak
         "featuregroup":L.featureGroup().addTo(map), //tüm objeler bir grupta olacak ve bu grup haritaya eklencek
+        "kolon_ve_tipleri":{"featureid" : "text",
+                            "Geometri Tipi" : "text",
+                            "X Koordinatı (Enlem)" : "ondalıklı sayı",
+                            "Y Koordinatı (Boylam)" : "ondalıklı sayı"},
         "coordinats":[],  //yaklaşma işlevi için koordinatlar bu listede tutulacak
       }
     }
   objeler_ve_ozellikleri(x_coordinats,y_coordinats,object_name){  //çoklu point oluşturma kısmında oluşturulacak pointe ilişkin parametreler bu metotta işlenecek ve class a eklenecek
-
     this.tum_ozellikler.objeler_ve_id_nolari.push(object_name.toString()) //obje id si ilgili yerine eklenecek
     this.tum_ozellikler.objeler["'"+object_name+"'"] ={geometrioznitelik:{  //eklenen objenin id nosu ile bir dize oluşturulacak ve tüm özellikleri eklenecek
       "type":"Feature",
@@ -552,16 +555,17 @@ oznitelikgoruntulemeveduzenleme(){
             document.getElementById("'"+kolonun_adi+"'").appendChild(document.createElement("br"));
       for (var k in Object.keys(this.tum_ozellikler.objeler_ve_id_nolari)){
       var object_namee = Object.values(this.tum_ozellikler.objeler_ve_id_nolari)[k]
-      console.log(document.getElementById("'"+object_namee+"'_objeyaklasma"))
       if(document.getElementById("'"+object_namee+"'_objeyaklasma")===null){
           var objeyeyaklasbuton = document.createElement("button")
-          objeyeyaklasbuton.style.width="50px";
-          objeyeyaklasbuton.style.height="50px";
-          objeyeyaklasbuton.style.opacity="0.5"
           objeyeyaklasbuton.style.backgroundImage="url(static/zoomin.png)"
           objeyeyaklasbuton.style.backgroundSize="100%"
+          objeyeyaklasbuton.style.opacity="0.5"
           objeyeyaklasbuton.style.float="left"
-          objeyeyaklasbuton.style.cursor="zoom-in"
+          objeyeyaklasbuton.style.width="52px";
+          objeyeyaklasbuton.style.height="52px";
+          objeyeyaklasbuton.style.borderWidth="2px"
+          objeyeyaklasbuton.style.borderStyle="solid"
+          objeyeyaklasbuton.style.borderColor="white"    
           objeyeyaklasbuton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].seciliobjeyeyaklas('"+object_namee+"')")
           objeyeyaklasbuton.setAttribute("id","'"+object_namee+"'_objeyaklasma")
           document.getElementById("objeyeyaklasma").appendChild(document.createElement("br"))
@@ -572,6 +576,11 @@ oznitelikgoruntulemeveduzenleme(){
       kolonicerik_detail.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail");
       kolonicerik_detail.style.width="140px";
       kolonicerik_detail.style.height="50px";
+      kolonicerik_detail.style.borderWidth="1px"
+      kolonicerik_detail.style.borderStyle="solid"
+      kolonicerik_detail.style.borderColor="white"
+      kolonicerik_detail.style.textAlign="center"
+      kolonicerik_detail.style.verticalAlign="middle"
       var kolon_icerik_name = document.createElement("summary");
       var genislik = document.getElementById("'"+kolonun_adi+"'").getElementsByTagName("details")[0].clientWidth;
       kolon_icerik_name.setAttribute("id","'"+object_namee+"-"+kolonun_adi+"'_iceriksummary");
@@ -599,9 +608,8 @@ oznitelikgoruntulemeveduzenleme(){
       kolonicerik_menu.style.color="white";
       kolonicerik_menu.style.backgroundColor="black";
       kolonicerik_menu.style.position="relative"
-      kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].kolonicerikdegistir('"+kolonun_adi+"')");
 
-      if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı(Enlem)" && kolonun_adi !== "Y Koordinatı(Boylam)"){
+      if (kolonun_adi!=="featureid" && kolonun_adi !=="Geometri Tipi" && kolonun_adi !=="X Koordinatı (Enlem)" && kolonun_adi !== "Y Koordinatı (Boylam)"){
         kolonicerik_menu.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir('"+kolonun_adi+"','"+object_namee+"')");
       }
       else{
@@ -667,86 +675,71 @@ oznitelikgoruntulemeveduzenleme(){
   }
   oznitelikdegisiklikuygula(kolon_adi){
     var yeni_kolon_ad = document.getElementById("kolonadiduzenle").value;
+    try{
+    var veri_tip=document.querySelector('input[name = cevap1]:checked').value;
+    }
+    catch{
+     var veri_tip=this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
+    }
+    console.log(yeni_kolon_ad)
+    console.log(veri_tip)
     document.getElementById("sayfamesajlari").innerText=""
-    if (yeni_kolon_ad!==kolon_adi && yeni_kolon_ad!==""){
-      for (var o in this.tum_ozellikler.objeler_ve_id_nolari){
-        var object_name = this.tum_ozellikler.objeler_ve_id_nolari[o]
-        this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
-        delete this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
-
-      try {
-        var veri_tip=document.querySelector('input[name = cevap1]:checked').value;
-        if (document.querySelector('input[name = cevap1]:checked').value==="text"){
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad].toString();
+    /* YENİ KOLON ADININ UYGUNLUĞUNUN TESTİ*/
+    console.log(sayilar.includes(yeni_kolon_ad[0]))
+    if(sayilar.includes(yeni_kolon_ad[0])===false && alfabe_harfler.includes(yeni_kolon_ad[0])===true){
+      alert("kolon adı uygun")
+      var kolonaduygunluk 
+      for (var h in yeni_kolon_ad){
+        console.log(alfabe_harfler.includes(yeni_kolon_ad[h]))
+        if (alfabe_harfler.includes(yeni_kolon_ad[h])){
+          kolonaduygunluk="uygun"
         }
-        else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseInt(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]);
-          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])){
-            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null;
-          }
-        }
-        else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseFloat(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]);
-          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])){
-            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null;
-          }
-        }
-        window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-        window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-        bekleme();
-        }
-        
-        catch(err){
-          console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik[yeni_kolon_ad];
-          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-          bekleme();
+        else{
+          kolonaduygunluk="uygunsuz"
+          break
         }
       }
-    }
-    else if (yeni_kolon_ad===""){
-      alert("Kolon Adı Boş Bırakılamaz.");
-      bekleme();
-    }
+      if (kolonaduygunluk==="uygun"){
+        this.tum_ozellikler.kolon_ve_tipleri[yeni_kolon_ad]=this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
+        delete this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
+        this.tum_ozellikler.kolon_ve_tipleri[yeni_kolon_ad]=veri_tip
+        for (var h in this.tum_ozellikler.objeler_ve_id_nolari){
+          var object_name = this.tum_ozellikler.objeler_ve_id_nolari[h]
+          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
+          delete this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]
+          if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="text"){
+            try{
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad].toString();
+          }
+          catch{
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null
+          }
+          }
+          else if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="tam sayı"){
+            try{
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseInt(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])
+            }
+            catch{
+              this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null
+            }
+          }
+          else if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="ondalıklı sayı"){
+            try{this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=parseFloat (this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad])
+          }
+          catch{
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=null
+          }
+          }
+        }
+      }
+      window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+      window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+      bekleme();}
     else{
-      for (var o in this.tum_ozellikler.objeler_ve_id_nolari){
-        var object_name = this.tum_ozellikler.objeler_ve_id_nolari[o]
-      try {
-        var veri_tip=document.querySelector('input[name = cevap1]:checked').value;
-        if (document.querySelector('input[name = cevap1]:checked').value==="text"){
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi].toString();
-        }
-        else if(document.querySelector('input[name = cevap1]:checked').value==="tam sayı"){
-          tthis.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=parseInt(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]);
-          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi])){
-            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=null;
-          }
-        }
-        else if(document.querySelector('input[name = cevap1]:checked').value==="ondalıklı sayı"){
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=parseFloat(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]);
-          if (isNaN(this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi])){
-            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=null;
-          }
-        }
-        window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-        window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-        bekleme();
-        }
-        catch(err){
-          console.log("Tip Seçilmeden İşlem Yapıldı. Kolon Tipi Aynı Kaldı");
-          this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi]=this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[kolon_adi];
-          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-          bekleme();
-        }
+      alert("kolon adı uygun değil")
     }
   }
 
-  }
-  kolonicerikdegistir(kolon_adi){
-    
-  }
   sagakolonekle(kolon_adi){
 //bilgilerin sayfa mesajlarına yazılması
       var sayfamesajlari=document.getElementById("sayfamesajlari");
@@ -800,66 +793,53 @@ oznitelikgoruntulemeveduzenleme(){
 
       sagakolonekleson(kolon_adi){
 
-      var kolonadi = document.getElementById("kolonadiduzenle").value;
-      var veri_tip = document.querySelector('input[name = cevap1]:checked').value
-      document.getElementById("sayfamesajlari").innerText=""
-      var key_list=Object.keys(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties);
-      var asdsad=-1
-      var iii;
+      var yeni_kolon_ad = document.getElementById("kolonadiduzenle").value;
       try {
-          for (iii in key_list){
-            if (key_list[iii]===kolon_adi){
-              var kolonindexi=parseInt(iii)+1;
-              for (var j in this.tum_ozellikler.objeler_ve_id_nolari){
-
-              var keyValues=Object.entries(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties);
-              keyValues.splice(kolonindexi,0,[kolonadi,null]);
-              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
-              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);
-              if (veri_tip==="text"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="text"
-              }
-              else if (veri_tip==="tam sayı"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="tam sayı"
-              }
-              else if (veri_tip==="ondalıklı sayı"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="ondalıklı sayı"
-              }
-            }
+      var veri_tip = document.querySelector('input[name = cevap1]:checked').value}
+      catch{
+        alert("Veri Tipi Seçilmediği İçin Kolonun Veri Tipi Metin Olarak Ayarlandı")
+        var veri_tip="text"
+      }
+      document.getElementById("sayfamesajlari").innerText=""
+      if(sayilar.includes(yeni_kolon_ad[0])===false && alfabe_harfler.includes(yeni_kolon_ad[0])===true){
+        alert("kolon adı uygun")
+        var kolonaduygunluk 
+        for (var h in yeni_kolon_ad){
+          console.log(alfabe_harfler.includes(yeni_kolon_ad[h]))
+          if (alfabe_harfler.includes(yeni_kolon_ad[h])){
+            kolonaduygunluk="uygun"
           }
+          else{
+            kolonaduygunluk="uygunsuz"
+            break
           }
-          window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-          window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-          }
-          catch(err){
-            for (iii in key_list){
-            if (key_list[iii]===kolon_adi){
-              var kolonindexi=parseInt(iii)+1;
-              for (var j in this.tum_ozellikler.objeler_ve_id_nolari){
-              var keyValues=Object.entries(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties);
-              keyValues.splice(kolonindexi,0,[kolonadi,null]);
-              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=null;
-              this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties=Object.fromEntries(keyValues);
-              if (veri_tip==="text"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="text"
-              }
-              else if (veri_tip==="tam sayı"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="tam sayı"
-              }
-              else if (veri_tip==="ondalıklı sayı"){
-                this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[j]+"'"].geometrioznitelik.properties[kolonadi]="ondalıklı sayı"
-              }
-            }}
-          }
-            window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
-            window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+        }
+        console.log(kolonaduygunluk)
+        console.log(this.tum_ozellikler)
+        if (kolonaduygunluk==="uygun"){
+          this.tum_ozellikler.kolon_ve_tipleri[yeni_kolon_ad]=veri_tip
+          for (var h in this.tum_ozellikler.objeler_ve_id_nolari){
+            var object_name = this.tum_ozellikler.objeler_ve_id_nolari[h]
             
+
+            this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties[yeni_kolon_ad]=veri_tip
           }
+        }
+        else{
+          alert("Kolon Adı Uygun Değil")
+        }
+        window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+        window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
+        bekleme();}
+        else {
+          alert("Kolon Adı Uygun Değil")
+        }
       }
   oznitelikkolonsil(kolon_adi){
     for (var n in this.tum_ozellikler.objeler_ve_id_nolari){
       var obje_name = this.tum_ozellikler.objeler_ve_id_nolari[n]
       delete this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]
+      delete this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
     }
     window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
     window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
@@ -871,29 +851,8 @@ oznitelikgoruntulemeveduzenleme(){
         var kolonadi=document.createElement("label");
         kolonadi.innerText="Kolon Adı=     "+kolon_adi;
         var kolontip=document.createElement("label");
-        console.log(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])
-        if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]===null){
-          if (this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="text"){
-            kolontip.innerText="Kolon Veri Tipi=     Metin";
-          }
-          else if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="tam sayı"){
-            kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
-          }
-          else if(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="ondalıklı sayı"){
-            kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
-          }
-        }
-        else{
-        if (typeof this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="string" || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="text"){
-          kolontip.innerText="Kolon Veri Tipi=     Metin";
-        }
-        else if (Number.isInteger(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])===true || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="tam sayı"){
-          kolontip.innerText="Kolon Veri Tipi=     Tam Sayı";
-        }
-        else if ((typeof this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]!=="string" && Number.isInteger(this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi])===false) || this.tum_ozellikler.objeler["'"+this.tum_ozellikler.objeler_ve_id_nolari[0]+"'"].geometrioznitelik.properties[kolon_adi]==="ondalıklı sayı"){
-          kolontip.innerText="Kolon Veri Tipi=     Ondalıklı Sayı";
-        }
-      }
+        kolontip.innerText="Kolon Veri Tipi: "+this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
+        
         document.getElementById("sayfamesajlari").appendChild(kolonadi);
         document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
         document.getElementById("sayfamesajlari").appendChild(kolontip);
@@ -919,17 +878,17 @@ oznitelikgoruntulemeveduzenleme(){
       icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
     }
     else{
-    if (typeof this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]==="string"){
+    if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="text"){
       kolonicerik_bilgi.innerText="Kolon Veri Tipi: Metin";
       icerikalma.setAttribute("type","text");
       icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
     }
-    else if (Number.isInteger(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]===true)){
+    else if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="tam sayı"){
       kolonicerik_bilgi.innerText="Kolon Veri Tipi: Tam Sayı";
       icerikalma.setAttribute("type","number");
       icerikalma.setAttribute("value",this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]);
     }
-    else if (typeof this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi]!=="string" && Number.isInteger(this.tum_ozellikler.objeler["'"+obje_name+"'"].geometrioznitelik.properties[kolon_adi])===false ){
+    else if (this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]==="ondalıklı sayı"){
       kolonicerik_bilgi.innerText="Kolon Veri Tipi: Ondalıklı Sayı";
       icerikalma.setAttribute("type","number");
       icerikalma.setAttribute("step","0.001");
@@ -946,6 +905,7 @@ oznitelikgoruntulemeveduzenleme(){
     degistir_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir_butonlaal('"+kolon_adi+"','"+kolonicerik_bilgi.innerText+"','"+obje_name+"')");
     sayfamesajlari.appendChild(degistir_buton);
   }
+
   oznitelikicerikdegistir_butonlaal(kolon_adi,kolonicerigi,obje_name){
 
     document.getElementById("'"+obje_name+"-"+kolon_adi+"'_kolonicerik_detail").removeAttribute("open")
@@ -973,9 +933,815 @@ oznitelikgoruntulemeveduzenleme(){
     document.getElementById("oznitelikpenceresi").innerText="";
     document.getElementById("oznitelikpenceresi").backgroundColor="unset"
   }
+  stildegistirme(){
+    var secilecekobjelerineskirenkleri = {}
+    var class_id=this.tum_ozellikler.id_nosu
+    var sayfamesajlari = document.getElementById("sayfamesajlari")
+    sayfamesajlari.style.backgroundColor="black"
+    sayfamesajlari.innerText=""
+    
+    var objesecerek = document.createElement("button")
+    objesecerek.innerText="Obje Seç"
+    objesecerek.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].objesecerekstildegistirme('"+this.tum_ozellikler.id_nosu+"')")
+    sayfamesajlari.appendChild(objesecerek)
+    var tumunusec = document.createElement("button")
+    tumunusec.innerText="Tümünü Seç"
+    tumunusec.onclick=function(){
+      var sayfamesajlari = document.getElementById("sayfamesajlari")
+      sayfamesajlari.style.backgroundColor="black"
+      sayfamesajlari.innerText="Ekrandan İlgili Noktalara Tıklayarak Seçim İşlemini Gerçekleştirebilirsiniz."
+      for (var k in window[class_id].tum_ozellikler.objeler_ve_id_nolari){
+        var id_no=window[class_id].tum_ozellikler.objeler_ve_id_nolari[k]
+        if(Object.keys(secilecekobjelerineskirenkleri).includes(id_no)===false){
+          var mevcut_renk = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor
+          secilecekobjelerineskirenkleri[id_no]=mevcut_renk.toString()
+          window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+          window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor =  "#56ffff"  //seçilen objeye seçi mrengi verilir
+          window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+            pointToLayer:function(feature,latlng){
+              return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+            }
+          }).addTo(window[class_id].tum_ozellikler.featuregroup)
+        }
+        else{
+          alert("Bu obje seçildi")
+        }
 
+      }
+      var secimibitir= document.createElement("button")
+              secimibitir.innerText="Seçimi Bitir"
+              secimibitir.onclick=function(){
+
+                                if (Object.keys(secilecekobjelerineskirenkleri).length>0){
+                                window[class_id].tum_ozellikler.featuregroup.off("click")
+                                window[class_id].secilenobjelerstildegistir(secilecekobjelerineskirenkleri,class_id)
+                                }
+                                else{
+                                  alert("Obje Seçilmedi. Lütfen Stil Uygulamak İstediğiniz Objeleri Seçiniz.")
+
+                                }
+                            }
+            sayfamesajlari.appendChild(document.createElement("br"))
+            sayfamesajlari.appendChild(secimibitir)
+            var kapatbuton=document.createElement("button")
+            kapatbuton.innerText="Kapat"
+            kapatbuton.onclick=function(){
+              console.log(secilecekobjelerineskirenkleri)
+              for (var n in Object.keys(secilecekobjelerineskirenkleri)){
+                var id_no=Object.keys(secilecekobjelerineskirenkleri)[n]
+                console.log(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor)
+                if (window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor==="#56ffff"){
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=secilecekobjelerineskirenkleri[id_no]
+                  window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                  
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                    pointToLayer:function(feature,latlng){
+                      return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                    }
+                  }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                }
+              }
+              sayfamesajlari.innerHTML=""
+              secilecekobjelerineskirenkleri={}
+           }
+            sayfamesajlari.appendChild(kapatbuton)
+    }
+    sayfamesajlari.appendChild(tumunusec)
+    var kapatbuton=document.createElement("button")
+    kapatbuton.innerText="Kapat"
+    kapatbuton.onclick=function(){
+      sayfamesajlari.innerHTML=""
+   }
+    sayfamesajlari.appendChild(document.createElement("br"))
+    sayfamesajlari.appendChild(kapatbuton)      
+  }
+
+       objesecerekstildegistirme(class_id){
+        var sayfamesajlari = document.getElementById("sayfamesajlari")
+        sayfamesajlari.style.backgroundColor="black"
+        sayfamesajlari.innerText="Ekrandan İlgili Noktalara Tıklayarak Seçim İşlemini Gerçekleştirebilirsiniz."
+        var secilecekobjelerineskirenkleri = {}
+
+        this.tum_ozellikler.featuregroup.on("click", function objesecme(e){
+          
+                  var id_no = e.layer.feature.properties.featureid
+                  if(Object.keys(secilecekobjelerineskirenkleri).includes(id_no)===false){
+                  var mevcut_renk = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor
+                  secilecekobjelerineskirenkleri[id_no]=mevcut_renk.toString()
+                  window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor =  "#56ffff"  //seçilen objeye seçi mrengi verilir
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                    pointToLayer:function(feature,latlng){
+                      return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                    }
+                  }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                }
+                else{
+                  alert("Bu obje seçildi")
+                }
+              })  
+              var secimibitir= document.createElement("button")
+              secimibitir.innerText="Seçimi Bitir"
+              secimibitir.onclick=function(){
+
+                                if (Object.keys(secilecekobjelerineskirenkleri).length>0){
+                                window[class_id].tum_ozellikler.featuregroup.off("click")
+                                window[class_id].secilenobjelerstildegistir(secilecekobjelerineskirenkleri,class_id)
+                                }
+                                else{
+                                  alert("Obje Seçilmedi. Lütfen Stil Uygulamak İstediğiniz Objeleri Seçiniz.")
+
+                                }
+                            }
+            sayfamesajlari.appendChild(document.createElement("br"))
+            sayfamesajlari.appendChild(secimibitir)
+            var kapatbuton=document.createElement("button")
+            kapatbuton.innerText="Kapat"
+            kapatbuton.onclick=function(){
+              console.log(secilecekobjelerineskirenkleri)
+              for (var n in Object.keys(secilecekobjelerineskirenkleri)){
+                var id_no=Object.keys(secilecekobjelerineskirenkleri)[n]
+                console.log(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor)
+                if (window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor==="#56ffff"){
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=secilecekobjelerineskirenkleri[id_no]
+                  window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                  
+                  window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                    pointToLayer:function(feature,latlng){
+                      return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                    }
+                  }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                }
+              }
+              sayfamesajlari.innerHTML=""
+              secilecekobjelerineskirenkleri={}
+           }
+            sayfamesajlari.appendChild(kapatbuton)                                
+
+      }
+      secilenobjelerstildegistir(secilecekobjelerineskirenkleri,class_id){
+        for (var n in Object.keys(secilecekobjelerineskirenkleri)){
+          var id_no=Object.keys(secilecekobjelerineskirenkleri)[n]
+          if (window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor==="#56ffff"){
+            window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=secilecekobjelerineskirenkleri[id_no]
+            window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+            
+            window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+              pointToLayer:function(feature,latlng){
+                return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+              }
+            }).addTo(window[class_id].tum_ozellikler.featuregroup)
+          }
+        }
+        var sayfamesajlari = document.getElementById("sayfamesajlari")
+        sayfamesajlari.style.backgroundColor="black"
+        sayfamesajlari.innerText="İşlem Türünü Seçiniz"
+        sayfamesajlari.appendChild(document.createElement("br"))
+        var noktagosterimayarlari = document.createElement("button")
+        noktagosterimayarlari.innerText="Noktasal Gösterim"
+        noktagosterimayarlari.onclick=function noktasalgosterimayarlari(){
+
+                  var sayfamesajlari = document.getElementById("sayfamesajlari")
+                  sayfamesajlari.innerText="İşlem Türünü Seçiniz"
+                  var tumuaynitip=document.createElement("button")
+                  tumuaynitip.innerText="Tek Tip"
+                  tumuaynitip.onclick=function(){
+
+                    var sayfamesajlari = document.getElementById("sayfamesajlari")
+                    sayfamesajlari.innerHTML=""
+                    var renksecimlabel = document.createElement("label")
+                    renksecimlabel.setAttribute("for","renksecimkutusu")
+                    renksecimlabel.innerText="Renk Seçiniz ve Uygulamak İçin 'Uygula' butonuna tıklayınız."
+                    var renksecimkutusu=document.createElement("input")
+                    renksecimkutusu.setAttribute("type","color")
+                    renksecimkutusu.setAttribute("id","renksecimkutusu")
+                    var renkalmabuton=document.createElement("input")
+                    renkalmabuton.setAttribute("type","submit")
+                    renkalmabuton.innerText="Uygula"
+                    renkalmabuton.onclick=function renksecim(){
+                      var yeni_renk = document.getElementById("renksecimkutusu").value
+                      for (var m in Object.keys(secilecekobjelerineskirenkleri)){
+                        var id_no=Object.keys(secilecekobjelerineskirenkleri)[m]
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=yeni_renk
+                       window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                        pointToLayer:function(feature,latlng){
+                          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                        }
+                      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                      }
+                      return noktasalgosterimayarlari()
+                    }
+                    var buyukluksecimlabel = document.createElement("label")
+                    buyukluksecimlabel.setAttribute("for","buyukluksecim")
+                    buyukluksecimlabel.innerText="Noktanın Yarıçapını Giriniz."
+                    var buyuklukgir = document.createElement("input")
+                    buyuklukgir.setAttribute("id","buyukluksecim");
+                    buyuklukgir.setAttribute("type","number");
+                    buyuklukgir.setAttribute("maxlenght","1000");
+                    buyuklukgir.setAttribute("step","0.001");
+                    buyuklukgir.required=true;
+                    var buyuklukalbuton = document.createElement("input")
+                    buyuklukalbuton.innerText="Uygula"
+                    buyuklukalbuton.setAttribute("type","submit")
+                    buyuklukalbuton.onclick=function(){
+                      var yeni_boyut =document.getElementById("buyukluksecim").value
+                      for (var m in Object.keys(secilecekobjelerineskirenkleri)){
+                        var id_no=Object.keys(secilecekobjelerineskirenkleri)[m]
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.radius=yeni_boyut
+                       window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                        pointToLayer:function(feature,latlng){
+                          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                        }
+                      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                      }
+                      return noktasalgosterimayarlari()
+                    }
+                    var saydamliklabel = document.createElement("label");
+                    saydamliklabel.setAttribute("for","saydamliksecim");
+                    saydamliklabel.innerText="Saydamlık Değerini Giriniz.";
+                    var saydamlikgirme = document.createElement("input");
+                    saydamlikgirme.setAttribute("id","saydamliksecim");
+                    saydamlikgirme.setAttribute("type","number");
+                    saydamlikgirme.setAttribute("max","1");
+                    saydamlikgirme.setAttribute("min","0");
+                    saydamlikgirme.setAttribute("step","0.001");
+                    saydamlikgirme.setAttribute("maxlength","1");
+                    saydamlikgirme.required=true;
+                    var saydamlikbuton= document.createElement("input");
+                    saydamlikbuton.setAttribute("type","submit");
+                    saydamlikbuton.setAttribute("value","Değiştir");
+                    saydamlikbuton.onclick=function(){
+                      var yeni_saydamlik =document.getElementById("saydamliksecim").value
+                      for (var m in Object.keys(secilecekobjelerineskirenkleri)){
+                        var id_no=Object.keys(secilecekobjelerineskirenkleri)[m]
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillOpacity=yeni_saydamlik
+                       window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+
+                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                        pointToLayer:function(feature,latlng){
+                          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                        }
+                      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                      }
+                      return noktasalgosterimayarlari()
+                    }
+
+                    sayfamesajlari.appendChild(renksecimlabel)
+                    sayfamesajlari.appendChild(renksecimkutusu)
+                    sayfamesajlari.appendChild(renkalmabuton)
+                    sayfamesajlari.appendChild(document.createElement("br"))
+                    sayfamesajlari.appendChild(buyukluksecimlabel)
+                    sayfamesajlari.appendChild(buyuklukgir)
+                    sayfamesajlari.appendChild(buyuklukalbuton)
+                    sayfamesajlari.appendChild(document.createElement("br"))
+                    sayfamesajlari.appendChild(saydamliklabel)
+                    sayfamesajlari.appendChild(saydamlikgirme)
+                    sayfamesajlari.appendChild(saydamlikbuton)
+                  }
+                  var siniflandir=document.createElement("button")
+                  siniflandir.innerText="Sınıflandır"
+                  siniflandir.onclick=function(){
+                      var id_no=Object.keys(secilecekobjelerineskirenkleri)[0]
+                      var nitelik =Object.keys(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties)
+                      if (nitelik.length===4){
+                        alert("Obje Sınıflandırılabilir Bir Kolona Sahip Değil.")
+                        return noktasalgosterimayarlari()
+                      }
+                    sayfamesajlari.innerText="Sınıflandırma İçin Kolonu Seçiniz.Veri Tipi 'Metin' Olan Kolonlarda Alfabe Sıralamasına Göre, Veri Tİpi 'Sayı' Olan Nitelikler Değer Büyüklüğüne Göre Sıralanır. Niteliği Kontrol Ediniz"
+                    sayfamesajlari.appendChild(document.createElement("br"))
+                    var kapatbuton=document.createElement("button")
+                    kapatbuton.innerText="Kapat"
+                    kapatbuton.onclick=function(){
+                      document.getElementById("sayfamesajlari").innerHTML=""
+                      document.getElementById("sayfamesajlari").innerText=""
+                    }
+                    sayfamesajlari.appendChild(kapatbuton)
+                    sayfamesajlari.appendChild(document.createElement("br"))  
+                    var kolonsecimi = document.createElement("div")
+                    kolonsecimi.style.width="300px"
+                    kolonsecimi.style.height="100px"
+                    kolonsecimi.style.overflow="scroll"
+                    kolonsecimi.style.float="left"
+                    kolonsecimi.setAttribute("id","kolonsecimi")
+                    var referanssinif=document.createElement("div")
+                    referanssinif.style.height="auto"
+                    referanssinif.style.width="300px"
+                    referanssinif.style.float="right"
+                    for (var v in nitelik){                      
+                      if (v<4){}
+                      else{
+                        var buton = document.createElement("button")
+                        var kolontip
+
+                                                if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="text"){
+                                                  kolontip="Kolon Veri Tipi=     Metin";
+                                                }
+                                                else if(window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="tam sayı"){
+                                                  kolontip="Kolon Veri Tipi=     Tam Sayı";
+                                                }
+                                                else if(window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="ondalıklı sayı"){
+                                                  kolontip="Kolon Veri Tipi=     Ondalıklı Sayı";
+                                                }
+                                               
+                        buton.innerText="Kolon Adı: "+nitelik[v]+kolontip
+                        buton.style.backgroundColor="black"
+                        buton.style.color="white"
+                        buton.style.border="1 px white solid"
+                        buton.onclick=function(){
+                          referanssinif.innerHTML=""
+                          var rengegore=document.createElement("button")
+                          rengegore.innerText="Renge Göre Sınıflandırma"
+                          rengegore.onclick=function(){
+                            console.log(secilecekobjelerineskirenkleri,nitelik[v])
+                            sayfamesajlari.innerText=""
+                            var sinifsayisilabel =document.createElement("label")
+                            sinifsayisilabel.innerText="Sınıf Sayısını Giriniz."
+                            sinifsayisilabel.setAttribute("for","sinifsayisialma")
+                            var sinifsayisigir=document.createElement("input")
+                            sinifsayisigir.innerText="Sınıf Sayısını Giriniz"
+                            sinifsayisigir.setAttribute("type","number") 
+                            sinifsayisigir.setAttribute("step","1")
+                            sinifsayisigir.setAttribute("min","0")
+                            sinifsayisigir.setAttribute("id","sinifsayisial")
+                            var baslangicrenklabel = document.createElement("label")
+                            baslangicrenklabel.setAttribute("for","baslangicrenk")
+                            baslangicrenklabel.innerText="Başlangıç Rengini Seçiniz."
+                            var baslangicrenk = document.createElement("input")
+                            baslangicrenk.setAttribute("type","color")
+                            baslangicrenk.setAttribute("id","baslangicrenk")
+                            var bitisrenklabel = document.createElement("label")
+                            bitisrenklabel.setAttribute("for","bitisrenk")
+                            bitisrenklabel.innerText="Bitiş Rengini Seçiniz."
+                            var bitisrenk = document.createElement("input")
+                            bitisrenk.setAttribute("type","color")
+                            bitisrenk.setAttribute("id","bitisrenk")
+                            var degerlerial=document.createElement("input")
+                            degerlerial.innerText="Uygula"
+                            degerlerial.setAttribute("type","submit")
+                            degerlerial.onclick=function(){
+                              var sinifsayisi = document.getElementById("sinifsayisial").value
+                              var baslangic_rengi=document.getElementById("bitisrenk").value
+                              var bitisrengi= document.getElementById("baslangicrenk").value
+                              sayfamesajlari.innerHTML=""
+                              var renkaralikalma= renksikalasiolusturma(baslangic_rengi,bitisrengi,sinifsayisi)
+                              var renkaralik=renkaralikalma._renkaralik   
+
+                              if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="text"){
+
+                                var niteliksiralamasi = {}
+                                for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                  var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                  niteliksiralamasi[id_no] = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties[nitelik[v]]
+                                }
+                                var puanlama = alfabeyegorepuanlama(niteliksiralamasi,sinifsayisi,renkaralik)
+                                niteliksiralamasi=puanlama._yeninitelik
+                                var puanlirenk=puanlama._puanlirenk
+                                for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                  var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                  var obje_puan = niteliksiralamasi[id_no]["puan"]
+                                  for (var d in Object.keys(puanlirenk)){
+                                    if (obje_puan>puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan<=puanlirenk[Object.keys(puanlirenk)[d]].bitis){
+                                      window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=Object.keys(puanlirenk)[d]
+                                      window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                                      window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                                        pointToLayer:function(feature,latlng){
+                                          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                                        }
+                                      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                                    }
+                                  }
+                                }
+                                 
+                              }
+                              else if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]!=="text"){
+                                var niteliksiralamasi = {}
+                                for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                  var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                  niteliksiralamasi[id_no] = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties[nitelik[v]]
+                                }
+                                var puanlama = sayiyagoresiralama(niteliksiralamasi,sinifsayisi,renkaralik)
+                                niteliksiralamasi=puanlama._yeninitelik
+                                var puanlirenk=puanlama._puanlirenk
+                                for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                  var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                  var obje_puan = niteliksiralamasi[id_no]["puan"]
+                                  for (var d in Object.keys(puanlirenk)){
+                                    if (obje_puan>puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan<=puanlirenk[Object.keys(puanlirenk)[d]].bitis){
+                                      window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=Object.keys(puanlirenk)[d]
+                                      window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                                      window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                                        pointToLayer:function(feature,latlng){
+                                          return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                                        }
+                                      }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                                    }
+                                  }
+                                }
+                              }
+                              return noktasalgosterimayarlari()
+                            }
+                          sayfamesajlari.innerHTML=""
+                          sayfamesajlari.appendChild(sinifsayisilabel)
+                          sayfamesajlari.appendChild(sinifsayisigir)
+                          sayfamesajlari.appendChild(document.createElement("br"))
+                          sayfamesajlari.appendChild(baslangicrenklabel)
+                          sayfamesajlari.appendChild(baslangicrenk)
+                          sayfamesajlari.appendChild(document.createElement("br"))
+                          sayfamesajlari.appendChild(bitisrenklabel)
+                          sayfamesajlari.appendChild(bitisrenk)
+                          sayfamesajlari.appendChild(document.createElement("br"))
+                          sayfamesajlari.appendChild(degerlerial)
+                          }
+                          var buyuklugegore=document.createElement("button")
+                          buyuklugegore.innerText="Büyüklüğe Göre Sınıflandırma"
+                          var saydamligagore=document.createElement("button")
+                          saydamligagore.innerText="Saydamlığa Göre Sınıflandırma"
+                          referanssinif.appendChild(rengegore)
+                          referanssinif.appendChild(document.createElement("br"))
+                          referanssinif.appendChild(buyuklugegore)
+                          referanssinif.appendChild(document.createElement("br"))
+                          referanssinif.appendChild(saydamligagore)
+                        }
+                        kolonsecimi.appendChild(buton)
+                      }
+                    }
+                    sayfamesajlari.appendChild(kolonsecimi)
+                    sayfamesajlari.appendChild(referanssinif)
+                  }
+                  sayfamesajlari.appendChild(document.createElement("br"))
+                  sayfamesajlari.appendChild(tumuaynitip)
+                  sayfamesajlari.appendChild(siniflandir)
+                  sayfamesajlari.appendChild(document.createElement("br"))
+                  var kapatbuton = document.createElement("button")
+                  kapatbuton.innerText="Kapat"
+                  kapatbuton.onclick = function(){
+                    for (var n in Object.keys(secilecekobjelerineskirenkleri)){
+                      var id_no=Object.keys(secilecekobjelerineskirenkleri)[n]
+                      if (window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor==="#56ffff"){
+                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=secilecekobjelerineskirenkleri[id_no]
+                        window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                        
+                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                          pointToLayer:function(feature,latlng){
+                            return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                          }
+                        }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                      }
+                    }
+                    sayfamesajlari.innerText=""
+                    sayfamesajlari.innerHTML=""
+                    sayfamesajlari.style.backgroundColor="unset"
+                  }
+                  sayfamesajlari.appendChild(kapatbuton)
+
+        }
+        var simgeselgosterim = document.createElement("button")
+        simgeselgosterim.innerText="Simgesel Gösterim"
+        sayfamesajlari.appendChild(noktagosterimayarlari)
+        sayfamesajlari.appendChild(simgeselgosterim)
+        sayfamesajlari.appendChild(document.createElement("br"))
+        var kapatbuton = document.createElement("button")
+        kapatbuton.innerText="Kapat"
+        kapatbuton.onclick = function(){
+          for (var n in Object.keys(secilecekobjelerineskirenkleri)){
+            var id_no=Object.keys(secilecekobjelerineskirenkleri)[n]
+            if (window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor==="#56ffff"){
+              window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=secilecekobjelerineskirenkleri[id_no]
+              window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+              
+              window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                pointToLayer:function(feature,latlng){
+                  return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                }
+              }).addTo(window[class_id].tum_ozellikler.featuregroup)
+            }
+          }
+          sayfamesajlari.innerText=""
+          sayfamesajlari.innerHTML=""
+          sayfamesajlari.style.backgroundColor="unset"
+        }
+        sayfamesajlari.appendChild(kapatbuton)
+
+      }
 }
-
 async function sureli_bekleme(x){
   await sleep(x)
+}
+
+
+class GradientColor {
+  constructor(startColor = "", endColor = "", minNum = 0, maxNum = 10) {
+    this.setColorGradient = (colorStart, colorEnd) => {
+      startColor = getHexColor(colorStart);
+      endColor = getHexColor(colorEnd);
+    };
+
+    this.setMidpoint = (minNumber, maxNumber) => {
+      minNum = minNumber;
+      maxNum = maxNumber;
+    };
+
+    this.getColor = (numberValue) => {
+      if (numberValue) {
+        return (
+          "#" +
+          generateHex(
+            numberValue,
+            startColor.substring(0, 2),
+            endColor.substring(0, 2)
+          ) +
+          generateHex(
+            numberValue,
+            startColor.substring(2, 4),
+            endColor.substring(2, 4)
+          ) +
+          generateHex(
+            numberValue,
+            startColor.substring(4, 6),
+            endColor.substring(4, 6)
+          )
+        );
+      }
+    };
+
+    const generateHex = (number, start, end) => {
+      if (number < minNum) {
+        number = minNum;
+      } else if (number > maxNum) {
+        number = maxNum;
+      }
+
+      const midPoint = maxNum - minNum;
+      const startBase = parseInt(start, 16);
+      const endBase = parseInt(end, 16);
+      const average = (endBase - startBase) / midPoint;
+      const finalBase = Math.round(average * (number - minNum) + startBase);
+      const balancedFinalBase =
+        finalBase < 16 ? "0" + finalBase.toString(16) : finalBase.toString(16);
+      return balancedFinalBase;
+    };
+
+    const getHexColor = (color) => {
+      return color.substring(color.length - 6, color.length);
+    };
+  }
+}
+
+class Gradient {
+  constructor(
+    colorGradients = "",
+    maxNum = 10,
+    colors = ["", ""],
+    intervals = []
+  ) {
+    const setColorGradient = (gradientColors) => {
+      if (gradientColors.length < 2) {
+        throw new Error(
+          `setColorGradient should have more than ${gradientColors.length} color`
+        );
+      } else {
+        const increment = maxNum / (gradientColors.length - 1);
+        const firstColorGradient = new GradientColor();
+        const lower = 0;
+        const upper = 0 + increment;
+        firstColorGradient.setColorGradient(
+          gradientColors[0],
+          gradientColors[1]
+        );
+        firstColorGradient.setMidpoint(lower, upper);
+        colorGradients = [firstColorGradient];
+        intervals = [
+          {
+            lower,
+            upper,
+          },
+        ];
+
+        for (let i = 1; i < gradientColors.length - 1; i++) {
+          const gradientColor = new GradientColor();
+          const lower = 0 + increment * i;
+          const upper = 0 + increment * (i + 1);
+          gradientColor.setColorGradient(
+            gradientColors[i],
+            gradientColors[i + 1]
+          );
+          gradientColor.setMidpoint(lower, upper);
+          colorGradients[i] = gradientColor;
+          intervals[i] = {
+            lower,
+            upper,
+          };
+        }
+        colors = gradientColors;
+      }
+    };
+
+    this.setColorGradient = (...gradientColors) => {
+      setColorGradient(gradientColors);
+      return this;
+    };
+
+    this.getColors = () => {
+      const gradientColorsArray = [];
+      for (let j = 0; j < intervals.length; j++) {
+        const interval = intervals[j];
+        const start = interval.lower === 0 ? 1 : Math.ceil(interval.lower);
+        const end =
+          interval.upper === maxNum
+            ? interval.upper + 1
+            : Math.ceil(interval.upper);
+        for (let i = start; i < end; i++) {
+          gradientColorsArray.push(colorGradients[j].getColor(i));
+        }
+      }
+      return gradientColorsArray;
+    };
+
+    this.getColor = (numberValue) => {
+      if (isNaN(numberValue)) {
+        throw new TypeError(`getColor should be a number`);
+      } else if (numberValue <= 0) {
+        throw new TypeError(`getColor should be greater than ${numberValue}`);
+      } else {
+        const toInsert = numberValue + 1;
+        const segment = (maxNum - 0) / colorGradients.length;
+        const index = Math.min(
+          Math.floor((Math.max(numberValue, 0) - 0) / segment),
+          colorGradients.length - 1
+        );
+        return colorGradients[index].getColor(toInsert);
+      }
+    };
+
+    this.setMidpoint = (maxNumber) => {
+      if (!isNaN(maxNumber) && maxNumber >= 0) {
+        maxNum = maxNumber;
+        setColorGradient(colors);
+      } else if (maxNumber <= 0) {
+        throw new RangeError(`midPoint should be greater than ${maxNumber}`);
+      } else {
+        throw new RangeError("midPoint should be a number");
+      }
+      return this;
+    };
+  }
+}
+
+function renksikalasiolusturma(baslangic_rengi,bitis_rengi,araliksayisi){
+  var baslangic_rengi=baslangic_rengi
+  var bitis_rengi=bitis_rengi
+  var araliksayisi=araliksayisi
+  var renkaralik = new Gradient()
+    .setColorGradient(baslangic_rengi, bitis_rengi)
+    .setMidpoint(araliksayisi)
+    .getColors();
+  return {
+    _renkaralik:renkaralik
+  }
+  }
+
+
+
+var puanlı_liste ={
+"a": 3.125,
+"b": 6.25,
+"c": 9.375,
+"d": 15.625,
+"e": 18.75,
+"f": 21.875,
+"g": 25,
+"h": 31.25,
+"i": 37.5,
+"j": 40.625,
+"k": 43.75,
+"l": 46.875,
+"m": 50,
+"n": 53.125,
+"o": 56.25,
+"p": 62.5,
+"q": 65.625,
+"r": 68.75,
+"s": 71.875,
+"t": 78.125,
+"u": 81.25,
+"v": 87.5,
+"w": 93.75,
+"x": 90.625,
+"y": 96.875,
+"z": 100,
+"ç": 12.5,
+"ö": 59.375,
+"ü": 84.375,
+"ğ": 28.125,
+"ı": 34.375,
+"ş": 75
+}
+
+
+function alfabeyegorepuanlama(nitelikler,sinifsayisi,renkaralik){
+  var nitelikler=nitelikler
+  var dilimaralik = 100/sinifsayisi
+  var sinifsayisiaralik={}
+  var sinifsayisi=sinifsayisi
+  var renkaralik=renkaralik
+  for (var j in renkaralik){
+    var no = parseInt(j)
+
+          if (no===0){
+          sinifsayisiaralik[renkaralik[no]]= {"baslangic":0,
+                                              "bitis":dilimaralik*(no+1)}
+          }
+    
+          else if (0  < no && no < sinifsayisi-1) {
+
+          var oncekibaslangic = sinifsayisiaralik[renkaralik[no-1]].bitis
+
+
+          sinifsayisiaralik[renkaralik[parseInt(no)]]= {"baslangic":oncekibaslangic,
+          "bitis":dilimaralik*(no+1)}
+          
+          }
+
+          if (no===sinifsayisi-1){
+
+            var oncekibaslangic = sinifsayisiaralik[renkaralik[no-1]].bitis
+
+            sinifsayisiaralik[renkaralik[parseInt(no)]]= {"baslangic":oncekibaslangic,
+            "bitis":100}
+          }
+          }
+
+          for (var d in Object.keys(nitelikler)){
+            
+            var c = parseInt(d)
+            var object_id = Object.keys(nitelikler)[c]
+            var objenitelik = nitelikler[Object.keys(nitelikler)[c]]
+            nitelikler[object_id] = {"tip":"text",
+                                    "puan":parseFloat(puanlı_liste[objenitelik[0]].toString())}
+          }
+          return {_yeninitelik:nitelikler,
+                  _puanlirenk:sinifsayisiaralik}
+          }
+function sayiyagoresiralama(nitelikler,sinifsayisi,renkaralik){
+  var nitelikler=nitelikler
+  var dilimaralik = 100/sinifsayisi
+  var sinifsayisiaralik={}
+  var sinifsayisi=sinifsayisi
+  var renkaralik=renkaralik
+  var nitelik_valueler = []
+  for (var j in renkaralik){
+    var no = parseInt(j)
+
+          if (no===0){
+          sinifsayisiaralik[renkaralik[no]]= {"baslangic":0,
+                                              "bitis":dilimaralik*(no+1)}
+          }
+    
+          else if (0  < no && no < sinifsayisi-1) {
+
+          var oncekibaslangic = sinifsayisiaralik[renkaralik[no-1]].bitis
+
+
+          sinifsayisiaralik[renkaralik[parseInt(no)]]= {"baslangic":oncekibaslangic,
+          "bitis":dilimaralik*(no+1)}
+          
+          }
+
+          if (no===sinifsayisi-1){
+
+            var oncekibaslangic = sinifsayisiaralik[renkaralik[no-1]].bitis
+
+            sinifsayisiaralik[renkaralik[parseInt(no)]]= {"baslangic":oncekibaslangic,
+            "bitis":100}
+          }
+          }
+
+          for (var d in Object.values(nitelikler)){
+            var c = parseInt(d)
+            var object_id = Object.keys(nitelikler)[c]
+          if (nitelikler[Object.keys(nitelikler)[c]]===NaN || nitelikler[Object.keys(nitelikler)[c]]===undefined || nitelikler[Object.keys(nitelikler)[c]]===null){
+              nitelikler[Object.keys(nitelikler)[c]]= 0
+          }
+           nitelik_valueler.push(nitelikler[Object.keys(nitelikler)[c]])
+           nitelik_valueler.sort((a, b) => a - b)
+          }
+          var enbuyukdeger = nitelik_valueler[nitelik_valueler.length-1]
+          var enkucukdeger = nitelik_valueler[0]
+          var aralik = enbuyukdeger-enkucukdeger
+          var formul = 100/aralik
+          for (var d in Object.keys(nitelikler)){
+            
+            var c = parseInt(d)
+            var object_id = Object.keys(nitelikler)[c]
+            var objenitelik = nitelikler[Object.keys(nitelikler)[c]]
+
+            nitelikler[object_id] = {"tip":"text",
+                                    "puan":objenitelik*formul}
+          }
+          return {_yeninitelik:nitelikler,
+                  _puanlirenk:sinifsayisiaralik}
 }
