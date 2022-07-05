@@ -802,7 +802,7 @@ oznitelikgoruntulemeveduzenleme(){
       }
       document.getElementById("sayfamesajlari").innerText=""
       if(sayilar.includes(yeni_kolon_ad[0])===false && alfabe_harfler.includes(yeni_kolon_ad[0])===true){
-        alert("kolon adı uygun")
+
         var kolonaduygunluk 
         for (var h in yeni_kolon_ad){
           console.log(alfabe_harfler.includes(yeni_kolon_ad[h]))
@@ -814,8 +814,7 @@ oznitelikgoruntulemeveduzenleme(){
             break
           }
         }
-        console.log(kolonaduygunluk)
-        console.log(this.tum_ozellikler)
+
         if (kolonaduygunluk==="uygun"){
           this.tum_ozellikler.kolon_ve_tipleri[yeni_kolon_ad]=veri_tip
           for (var h in this.tum_ozellikler.objeler_ve_id_nolari){
@@ -1256,7 +1255,6 @@ oznitelikgoruntulemeveduzenleme(){
                           var rengegore=document.createElement("button")
                           rengegore.innerText="Renge Göre Sınıflandırma"
                           rengegore.onclick=function(){
-                            console.log(secilecekobjelerineskirenkleri,nitelik[v])
                             sayfamesajlari.innerText=""
                             var sinifsayisilabel =document.createElement("label")
                             sinifsayisilabel.innerText="Sınıf Sayısını Giriniz."
@@ -1283,13 +1281,12 @@ oznitelikgoruntulemeveduzenleme(){
                             degerlerial.innerText="Uygula"
                             degerlerial.setAttribute("type","submit")
                             degerlerial.onclick=function(){
-                              var sinifsayisi = document.getElementById("sinifsayisial").value
-                              var baslangic_rengi=document.getElementById("bitisrenk").value
-                              var bitisrengi= document.getElementById("baslangicrenk").value
+                              var sinifsayisi = parseInt(document.getElementById("sinifsayisial").value)
+                              var baslangic_rengi=document.getElementById("baslangicrenk").value
+                              var bitisrengi= document.getElementById("bitisrenk").value
                               sayfamesajlari.innerHTML=""
                               var renkaralikalma= renksikalasiolusturma(baslangic_rengi,bitisrengi,sinifsayisi)
                               var renkaralik=renkaralikalma._renkaralik   
-
                               if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="text"){
 
                                 var niteliksiralamasi = {}
@@ -1323,14 +1320,19 @@ oznitelikgoruntulemeveduzenleme(){
                                   var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
                                   niteliksiralamasi[id_no] = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties[nitelik[v]]
                                 }
+                                console.log(renkaralik)
                                 var puanlama = sayiyagoresiralama(niteliksiralamasi,sinifsayisi,renkaralik)
                                 niteliksiralamasi=puanlama._yeninitelik
                                 var puanlirenk=puanlama._puanlirenk
+                                console.log(puanlirenk)
                                 for (var c in Object.keys(secilecekobjelerineskirenkleri)){
                                   var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
                                   var obje_puan = niteliksiralamasi[id_no]["puan"]
                                   for (var d in Object.keys(puanlirenk)){
-                                    if (obje_puan>puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan<=puanlirenk[Object.keys(puanlirenk)[d]].bitis){
+                                    if (obje_puan===0){
+
+                                    }
+                                    if (obje_puan > puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan <= puanlirenk[Object.keys(puanlirenk)[d]].bitis){
                                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.fillColor=Object.keys(puanlirenk)[d]
                                       window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
                                       window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
@@ -1342,7 +1344,10 @@ oznitelikgoruntulemeveduzenleme(){
                                   }
                                 }
                               }
-                              return noktasalgosterimayarlari()
+                              sayfamesajlari.innerHTML=""
+                              sayfamesajlari.appendChild(document.createElement("br"))
+
+                            
                             }
                           sayfamesajlari.innerHTML=""
                           sayfamesajlari.appendChild(sinifsayisilabel)
@@ -1358,6 +1363,118 @@ oznitelikgoruntulemeveduzenleme(){
                           }
                           var buyuklugegore=document.createElement("button")
                           buyuklugegore.innerText="Büyüklüğe Göre Sınıflandırma"
+                          buyuklugegore.onclick= function(){
+                            sayfamesajlari.innerText=""
+                            var sinifsayisilabel =document.createElement("label")
+                            sinifsayisilabel.innerText="Sınıf Sayısını Giriniz."
+                            sinifsayisilabel.setAttribute("for","sinifsayisialma")
+                            var sinifsayisigir=document.createElement("input")
+                            sinifsayisigir.innerText="Sınıf Sayısını Giriniz"
+                            sinifsayisigir.setAttribute("type","number") 
+                            sinifsayisigir.setAttribute("step","1")
+                            sinifsayisigir.setAttribute("min","0")
+                            sinifsayisigir.setAttribute("id","sinifsayisial")
+                            var baslangicbuyukluklabel = document.createElement("label")
+                            baslangicbuyukluklabel.setAttribute("for","baslangicbuyukluk")
+                            baslangicbuyukluklabel.innerText="Başlangıç Büyüklüğünü Giriniz."
+                            var baslangicbuyukluk = document.createElement("input")
+                            baslangicbuyukluk.setAttribute("type","number")
+                            baslangicbuyukluk.setAttribute("step","0.0001")
+                            baslangicbuyukluk.setAttribute("id","baslangicbuyukluk")
+                            var bitisbuyukluklabel = document.createElement("label")
+                            bitisbuyukluklabel.setAttribute("for","bitisbuyukluk")
+                            bitisbuyukluklabel.innerText="Bitiş Büyüklüğünü Giriniz."
+                            var bitisbuyukluk = document.createElement("input")
+                            bitisbuyukluk.setAttribute("type","number")
+                            bitisbuyukluk.setAttribute("step","0.0001")
+                            bitisbuyukluk.setAttribute("id","bitisbuyukluk")
+                            var degerlerial=document.createElement("input")
+                            degerlerial.innerText="Uygula"
+                            degerlerial.setAttribute("type","submit")
+                            degerlerial.onclick=function(){
+                              var sinifsayisi = parseInt(document.getElementById("sinifsayisial").value)
+                              var baslangicbuyukluk =parseFloat(document.getElementById("baslangicbuyukluk").value)
+                              var bitisbuyukluk = parseFloat(document.getElementById("bitisbuyukluk").value)
+                              sayfamesajlari.innerHTML=""
+                              var renkaralik=[]
+                              var artiss = (bitisbuyukluk-baslangicbuyukluk)/(sinifsayisi-1)
+
+                              for (i in range(1,sinifsayisi)){
+                                var oge = baslangicbuyukluk+(parseInt(i)*artiss)
+                                renkaralik.push(oge)
+                                }
+                                if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]==="text"){
+
+                                  var niteliksiralamasi = {}
+                                  for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                    var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                    niteliksiralamasi[id_no] = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties[nitelik[v]]
+                                  }
+                                  var puanlama = alfabeyegorepuanlama(niteliksiralamasi,sinifsayisi,renkaralik)
+                                  niteliksiralamasi=puanlama._yeninitelik
+                                  var puanlirenk=puanlama._puanlirenk
+                                  for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                    var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                    var obje_puan = niteliksiralamasi[id_no]["puan"]
+                                    for (var d in Object.keys(puanlirenk)){
+                                      if (obje_puan>puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan<=puanlirenk[Object.keys(puanlirenk)[d]].bitis){
+                                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.radius=parseFloat(Object.keys(puanlirenk)[d])
+                                        window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                                          pointToLayer:function(feature,latlng){
+                                            return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                                          }
+                                        }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                                      }
+                                    }
+                                  }
+                                   
+                                }
+                                else if (window[class_id].tum_ozellikler.kolon_ve_tipleri[nitelik[v]]!=="text"){
+                                  var niteliksiralamasi = {}
+                                  console.log(renkaralik)
+                                  for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                    var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                    niteliksiralamasi[id_no] = window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik.properties[nitelik[v]]
+                                  }
+                                  var puanlama = sayiyagoresiralama(niteliksiralamasi,sinifsayisi,renkaralik)
+                                  niteliksiralamasi=puanlama._yeninitelik
+                                  var puanlirenk=puanlama._puanlirenk
+                                  console.log(puanlirenk)
+                                  console.log(niteliksiralamasi)
+                                  for (var c in Object.keys(secilecekobjelerineskirenkleri)){
+                                    var id_no=Object.keys(secilecekobjelerineskirenkleri)[c]
+                                    var obje_puan = niteliksiralamasi[id_no]["puan"]
+                                    for (var d in Object.keys(puanlirenk)){
+                                      if (obje_puan>puanlirenk[Object.keys(puanlirenk)[d]].baslangic && obje_puan<=puanlirenk[Object.keys(puanlirenk)[d]].bitis){
+                                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim.radius=parseFloat(Object.keys(puanlirenk)[d])
+                                        window[class_id].tum_ozellikler.featuregroup.removeLayer(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"])
+                                        window[class_id].tum_ozellikler.objeler["'"+id_no+"'"]["feature"]= L.geoJSON(window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].geometrioznitelik,{
+                                          pointToLayer:function(feature,latlng){
+                                            return L.circleMarker(latlng,window[class_id].tum_ozellikler.objeler["'"+id_no+"'"].bicim.bicim) //seçilen obje yeni rengiyle tekrar eklenir
+                                          }
+                                        }).addTo(window[class_id].tum_ozellikler.featuregroup)
+                                      }
+                                    }
+                                  }
+                                }
+                              console.log(window[class_id].tum_ozellikler.objeler)
+                            }
+                            sayfamesajlari.innerHTML=""
+                            sayfamesajlari.appendChild(sinifsayisilabel)
+                            sayfamesajlari.appendChild(sinifsayisigir)
+                            sayfamesajlari.appendChild(document.createElement("br"))
+                            sayfamesajlari.appendChild(baslangicbuyukluklabel)
+                            sayfamesajlari.appendChild(baslangicbuyukluk)
+                            sayfamesajlari.appendChild(document.createElement("br"))
+                            sayfamesajlari.appendChild(bitisbuyukluklabel)
+                            sayfamesajlari.appendChild(bitisbuyukluk)
+                            sayfamesajlari.appendChild(document.createElement("br"))
+                            sayfamesajlari.appendChild(degerlerial)
+                          }
+
+
+
                           var saydamligagore=document.createElement("button")
                           saydamligagore.innerText="Saydamlığa Göre Sınıflandırma"
                           referanssinif.appendChild(rengegore)
@@ -1680,8 +1797,13 @@ function alfabeyegorepuanlama(nitelikler,sinifsayisi,renkaralik){
             var c = parseInt(d)
             var object_id = Object.keys(nitelikler)[c]
             var objenitelik = nitelikler[Object.keys(nitelikler)[c]]
+
             nitelikler[object_id] = {"tip":"text",
                                     "puan":parseFloat(puanlı_liste[objenitelik[0]].toString())}
+          if (parseFloat(puanlı_liste[objenitelik[0]].toString())===0){
+            nitelikler[object_id] = {"tip":"text",
+                                  "puan":1}
+          }
           }
           return {_yeninitelik:nitelikler,
                   _puanlirenk:sinifsayisiaralik}
@@ -1728,20 +1850,27 @@ function sayiyagoresiralama(nitelikler,sinifsayisi,renkaralik){
           }
            nitelik_valueler.push(nitelikler[Object.keys(nitelikler)[c]])
            nitelik_valueler.sort((a, b) => a - b)
+           console.log(nitelik_valueler)
           }
           var enbuyukdeger = nitelik_valueler[nitelik_valueler.length-1]
           var enkucukdeger = nitelik_valueler[0]
           var aralik = enbuyukdeger-enkucukdeger
-          var formul = 100/aralik
+          var formul = 100/(nitelik_valueler.length-1)
+          console.log(enbuyukdeger,"\n",enkucukdeger,"\n",aralik,"\n",formul)
           for (var d in Object.keys(nitelikler)){
             
-            var c = parseInt(d)
+            var c = parseInt(d) 
             var object_id = Object.keys(nitelikler)[c]
-            var objenitelik = nitelikler[Object.keys(nitelikler)[c]]
-
-            nitelikler[object_id] = {"tip":"text",
-                                    "puan":objenitelik*formul}
+            var objenitelik = parseFloat(nitelikler[Object.keys(nitelikler)[c]])
+            var formul = (objenitelik-enkucukdeger) * (100/(enbuyukdeger-enkucukdeger))
+            nitelikler[object_id] = {"tip":"sayı",
+                                      "puan":formul}
+            if (formul===0){
+              nitelikler[object_id] = {"tip":"sayı",
+              "puan":0.1}
+            }
           }
+          console.log(nitelikler)
           return {_yeninitelik:nitelikler,
                   _puanlirenk:sinifsayisiaralik}
 }

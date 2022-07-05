@@ -277,14 +277,17 @@ function map_create(i){
   }
   }
 function remove_tile_layer(x){
+  console.log(x)
   maps_for_leaflet[x].remove(map)
   gecerli_tilelayer=""
 }
 function tilelayer_yenile(x){
   console.log(x)
-  var x=x
+  var x = x
+  if (x===""){}
+  else{
   remove_tile_layer(x)
-  add_tilelayer(x)
+  add_tilelayer(x)}
 }
   // Haritanın Sol Alt Köşesinde Koordinat Gösterme
 function show_coordints() { 
@@ -314,6 +317,8 @@ function show_coordints() {
 }
 async function haritayi_yenile(){
   var x = gecerli_tilelayer
+  if (x===""){}
+  else{
   remove_tile_layer(x)
   add_tilelayer(x)
   if (gecerli_koordinat==="EPSG:3857"){
@@ -326,6 +331,7 @@ async function haritayi_yenile(){
   }
   await sleep(5000)
   map.stop()
+}
 }
 const map_layers = []
 const map_layers_tum= []
