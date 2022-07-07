@@ -177,6 +177,7 @@ function koordinat_degistirme(i){
         var obje = map_layers_id_nolari[j]
         obje.objeyiyenile(obje)
       }
+      haritayi_yenile(gecerli_tilelayer)
     }
   }
 }
@@ -333,23 +334,23 @@ function show_coordints() {
   }
 }
 /* TİLELAYER DEĞİŞİMİNDE VEYA KOORDİNAT SİSTEMİ DEĞİŞİMİNDE VEYA MERKEZİ AYARLANMIŞ HARİTA GÖRÜNÜMÜNE GEÇMEK İÇİN KULLANILAN HARİTA YENİLEME FONKSİYONU */
-async function haritayi_yenile(){
+async function haritayi_yenile(gecerli_tilelayer){
   var x = gecerli_tilelayer
   if (x===""){}
   else{
   remove_tile_layer(x)
   add_tilelayer(x)
+}
   if (gecerli_koordinat==="EPSG:3857"){
     map.flyTo([38.9637,35.2433],7)
   }
   else{
+    console.log(x,gecerli_koordinat)
     map.flyTo([38.9637,35.2433],4,{
       animate:false
     })
   }
-  await sleep(5000)
-  map.stop()
-}
+
 }
 const map_layers = []
 const map_layers_tum= []
