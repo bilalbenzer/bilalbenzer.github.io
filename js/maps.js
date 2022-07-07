@@ -1,7 +1,9 @@
+/*BELİRLİ BİR SAYIDA FOR DÖNGÜSÜ OLUŞTURMAK İÇİN FONKSİYON
+KULLANIM ÖRNEĞİ; for (var i in range(0,15)  */
 function range(start, end) {
   return Array.from({ length: end - start + 1 }, (_, i) => i)
 };
-
+/* PROJEKSİYON SİSTEMİ TANIMLARKEN KULLANILACAK OLAN ÇÖZÜNÜRLÜK VE ORİJİN DEĞERLERİ */
 const origin = [38066.8071289063 ,3842467.31384277];
 const resolutions = [(origin[1]-origin[0])/256];
 var i;
@@ -10,7 +12,10 @@ for (i in range(1,17)){
     var cozunurluk = resolutions[i]/2;
     resolutions.push(cozunurluk);
 };
+
+/* KOORDİNAT DEĞİŞİMLERİNDE GEÇERLİ KOORDİNATIN BİLDİRİLDİĞİ DEĞİŞKEN*/
 var gecerli_koordinat = "EPSG:3857"
+/*KOORDİNAT SİSTEMLERİ VE PARAMETRELERİ*/
 const koordinat_donusum_parametre = {
   "EPSG:2319":"+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=500000 +y_0=0 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs", 
   "EPSG:2320":"+proj=tmerc +lat_0=0 +lon_0=30 +k=1 +x_0=500000 +y_0=0 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs ", 
@@ -27,6 +32,8 @@ const koordinat_donusum_parametre = {
   "SR-ORG:7936":"+proj=tmerc +lat_0=0 +lon_0=42 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs", 
   "SR-ORG:7937":"+proj=tmerc +lat_0=0 +lon_0=45 +k=1 +x_0=500000 +y_0=0 +ellps=GRS80 +units=m +no_defs", 
 }
+/*KOORDİNAT SİSTEMLERİ DEĞİŞKELERİ*/
+
 const koordinat_sistemleri_isimleri = {
   "EPSG:3857":"EPSG:3857 WGS 84 / Pseudo-Mercator",
   "EPSG:2319":"EPSG:2319 ED50/TM27",
@@ -44,6 +51,8 @@ const koordinat_sistemleri_isimleri = {
   "SR-ORG:7936":"SR-ORG:7936 ITRF96/TM42",
   "SR-ORG:7937":"SR-ORG:7937 ITRF96/TM45",
 }
+
+/* MAP TANIMLANIRKEN KULLANILACAK OLAN KOORDİNAT SİSTEMİ PARAMETRELERİ */
 const koordinat_sistemleri = {
   "EPSG:3857":L.CRS.EPSG3857,
   "EPSG:2319":new L.Proj.CRS (
@@ -132,6 +141,10 @@ const koordinat_sistemleri = {
             }),               
 }
 
+/* KOORDİNAT DEĞİŞTİRME FONKSİYONU. BU FONKSİYON KULLANILDIĞINDA EĞER GEÇERLİ KOORDİNAT 3857 YANİ WGS84 İSE BU BAZ ALINARAK HARİTA OLUŞTURULUR VE EKRANDAKİ
+TÜM OBJELER BUNA GÖRE YENİLENİR
+EĞER FARKLI BİR KOODİNAT GELMİŞ İSE GEÇERLİ OLAN TİLELAYER VARSA EĞER KALDIRILIR (HENÜZ WGS84 DIŞINDAKİ KOORDİNATLARDA TİLELAYER DESTEKLENMEMEKTE)
+OBJELER HARİTADAN KALDIRILIR VE TEKRAR EKLENİR YANİ YENİLENİR */
 function koordinat_degistirme(i){
   var i = i
   for (a in koordinat_sistemleri){
@@ -168,16 +181,20 @@ function koordinat_degistirme(i){
   }
 }
 
-//harita ekranının oluşturulması
+/* harita ekranının oluşturulması */
+// HARİTA AYARLARI
 var mapoptions = {  
   center: [38.9637,35.2433],
   zoom: 7,
   zoomControl: false,
   drawControl: true,
   zoomAnimation:false}
+  //HARİTANIN OLUŞTURULMASI
 var map =L.map('map_screen',
   mapoptions
 )
+//HARİTANIN OLUŞTURULMASI İÇİN FONKSİYON
+/* TANIMLI OLAN KOORDİNAT SİSTEMİNE GÖRE VEYA KOORDİNAT SİSTEMİ DEĞİŞTİRİLDİĞİNDE GEREKLİ PARAMETRELERİ İF DÖNGÜSÜ İLE ALARAK HARİTA OLUŞTURULUR */
 function map_create(i){
   var i = i
   for (a in koordinat_sistemleri){
@@ -202,11 +219,10 @@ function map_create(i){
   }
 }
 
-//draw geommety 
 
-// harita çeşitleri
+/* // harita çeşitleri
 
-//harita çeşitlerinin nesnede belirtilmesi ( fonksiyonlar için)
+//harita çeşitlerinin nesnede belirtilmesi ( fonksiyonlar için) */
   const maps_for_leaflet = {
     "OpenStreetMap":L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -258,10 +274,10 @@ function map_create(i){
                         variant: '',
                         accessToken: 'wpnsRT419zEQ9XTokJabanKEDLmSbNI6J3b4suZiYVwQgOQgDUvbj9v7WTMer2aT'
                     })}
-  //tilelayer add
+/* TİLELAYER EKLEME */
   var gecerli_tilelayer = ""
   var i 
-
+/* WGS84 KOORDİNAT SİSTEMİNDE TİLELAYER EKLEMESİ YAPILABİLİR. DİĞER KOORDİNAT SİSTEMLERİNDE BU ÖZELLİK MEVCUT DEĞİL */
   function add_tilelayer(x){
     if (gecerli_koordinat==="EPSG:3857"){
       maps_for_leaflet[x].addTo(map)
@@ -276,13 +292,14 @@ function map_create(i){
     alert("WGS84 Dışındaki Projeksiyonlarda Harita Desteği Henüz Mevcut Değildir.")
   }
   }
+/* EKRANDAN GEÇERLİ TİLE LAYERIN KALDIRILMASI FONKSİYONU */
 function remove_tile_layer(x){
   console.log(x)
   maps_for_leaflet[x].remove(map)
   gecerli_tilelayer=""
 }
+/* OBJELERDEKİ DEĞİŞİKLİKLER İÇİN EKRANDAKİ TİLELAYER YENİLENİR */
 function tilelayer_yenile(x){
-  console.log(x)
   var x = x
   if (x===""){}
   else{
@@ -315,6 +332,7 @@ function show_coordints() {
     }
   }
 }
+/* TİLELAYER DEĞİŞİMİNDE VEYA KOORDİNAT SİSTEMİ DEĞİŞİMİNDE VEYA MERKEZİ AYARLANMIŞ HARİTA GÖRÜNÜMÜNE GEÇMEK İÇİN KULLANILAN HARİTA YENİLEME FONKSİYONU */
 async function haritayi_yenile(){
   var x = gecerli_tilelayer
   if (x===""){}

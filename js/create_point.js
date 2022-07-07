@@ -407,7 +407,8 @@ class point_object {
         document.getElementById("sayfamesajlari").appendChild(document.createElement("br"));
         document.getElementById("sayfamesajlari").appendChild(kapatbuton);
       }
-      
+      /* SEMBOL İLE GÖSTERİLMESİ İÇİN GEREKLİ AYARLARIN OLDUĞU PENCERE. BURADA İNTERNETTEN URL ALINARAK BİR SİMGE SEÇİLEBİLİR. LİSTEDEN BİR SİMGE SEÇİLEBİLİR
+      SİMGENİN BÜYÜKLÜĞÜ VE SAYDAMLIĞI GİRİLEREK AYARLANABİLİR */
       sembolgosterimiayarlari(){
         
         document.getElementById("sayfamesajlari").style.backgroundColor="black";
@@ -582,6 +583,7 @@ class point_object {
       // kullanıcı, kütüphaneden bir sembol seçerse bu blok çalışır ve seçilen sembol objeye uygulanır
       semboluuygula(i,x){
         this.icon.iconUrl=i;
+        console.log(i)
         this.gecerli_isaret="sembol";
         window[this.id_nosu].objeyiyenile(window[this.id_nosu]);
       }
@@ -833,6 +835,7 @@ class point_object {
           //kolona ait div
       }
     }
+      /*  ÖZNİTELİK KOLONLARININ DÜZENLENMESİ ADIMI */
       oznitelikkolonduzenle(i){
         document.getElementById(i+"details").removeAttribute("open");
         //bilgilerin sayfa mesajlarına yazılması
@@ -885,6 +888,7 @@ class point_object {
         document.getElementById("tipsecim").appendChild(uygula_buton);
   
       }
+      /*  ÖZNİTELİK KOLONUNDA DÜZENLEMELERİN UYGULANMASI */
       oznitelikdegisiklikuygula(i){
         document.getElementById("sayfamesajlari").innerText="";
 
@@ -958,7 +962,7 @@ class point_object {
         }
         bekleme();
       }
-        
+        /* ÖZNİTELİK KOLONLARININ ÖZELLİKLERİ  */
     oznitelikmenuozellikler(k){
           var sayfamesajlari=document.getElementById("sayfamesajlari");
           sayfamesajlari.style.backgroundColor="black";
@@ -985,11 +989,13 @@ class point_object {
           kapatbutonu.innerText="Kapat";
           document.getElementById("sayfamesajlari").appendChild(kapatbutonu);
       }
+      /* ÖZNİTELİK KOLONLARININ SİLİNMESİ */
       oznitelikkolonsil(l){
         delete this.properties[l];
         window[this.id_nosu].oznitelikgoruntulemeveduzenleme();
         window[this.id_nosu].objeyiyenile(window[this.id_nosu]);
       }
+      /* KOLON EKLEME */
       sagakolonekle(v){
         //bilgilerin sayfa mesajlarına yazılması
         var sayfamesajlari=document.getElementById("sayfamesajlari");
@@ -1050,6 +1056,7 @@ class point_object {
         uygula_buton.setAttribute("onclick","window['"+this.id_nosu+"'].sagakolonekleson('"+v+"')");
         document.getElementById("tipsecim").appendChild(uygula_buton);
       }
+      /*  KOLON EKLEMENİN UYGULANAMSI */
       sagakolonekleson(m){
         var kolonadi = document.getElementById("kolonadiduzenle").value;
         var kolonniteligi=document.getElementById("nitelikalma").value;
@@ -1100,6 +1107,7 @@ class point_object {
               window[this.id_nosu].oznitelikgoruntulemeveduzenleme();
             }
       }
+      /* ÖZNİTELİK BİLGİSİ DEĞİŞTİRME */
       oznitelikicerikdegistir(i){
         var sayfamesajlari=document.getElementById("sayfamesajlari");
         sayfamesajlari.innerText="";
@@ -1135,6 +1143,7 @@ class point_object {
         degistir_buton.setAttribute("onclick","window['"+this.id_nosu+"'].oznitelikicerikdegistir_butonlaal('"+i+"','"+kolonicerik_bilgi.innerText+"')");
         sayfamesajlari.appendChild(degistir_buton);
       }
+      /* ÖZNİTELİK İÇERİĞİ DEĞİŞTİRME  */
       oznitelikicerikdegistir_butonlaal(i,b){
         var aaa=document.getElementById("kolonicerikal").value;
         if (b==="Kolon Veri Tipi: Metin"){
@@ -1149,6 +1158,7 @@ class point_object {
       document.getElementById(i+"iceriksummary").innerText=this.properties[i];
       bekleme();
       }    
+      /* ÖZNİTELİK PENCERESİNİ KAPATMA */
       oznitelikpenceresikapat(){
         document.getElementById('sayfamesajlari').style.backgroundColor  = "unset";
         document.getElementById('sayfamesajlari').innerText = "";
@@ -1156,7 +1166,7 @@ class point_object {
         document.getElementById("oznitelikpenceresi").style.backgroundColor="unset  ";
       }
     }
-  
+  /* KATMAN SİLME */
   async function katman_sil(i){
     document.getElementById('sayfamesajlari').style.backgroundColor  = "black";
     document.getElementById('sayfamesajlari').innerText = "Katman Siliniyor";
@@ -1186,7 +1196,7 @@ function isValidURL(u){
       console.log("Url Adresi Boş Girilemez.");
   }
 }
-//----
+/* SEMBOLLER */
 const symbol_list={
     agac:{"point_sembols/tree_black.png":"Ağaç"},
     havaalani:{"point_sembols/airport_black.png":"Hava Alanı"},
@@ -1194,6 +1204,7 @@ const symbol_list={
     liman:{"point_sembols/liman.png":"Liman"},
     fabrika:{"point_sembols/fabrika.png":"Fabrika"}
     };
+/* RENKLER */
 var renk_listesi = [
     ' #f8f8ff ',
     ' #f5f5f5 ',
