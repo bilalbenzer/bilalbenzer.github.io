@@ -336,6 +336,8 @@ function show_coordints() {
 /* TİLELAYER DEĞİŞİMİNDE VEYA KOORDİNAT SİSTEMİ DEĞİŞİMİNDE VEYA MERKEZİ AYARLANMIŞ HARİTA GÖRÜNÜMÜNE GEÇMEK İÇİN KULLANILAN HARİTA YENİLEME FONKSİYONU */
 async function haritayi_yenile(gecerli_tilelayer){
   var x = gecerli_tilelayer
+  console.log(gecerli_tilelayer)
+
   if (x===""){}
   else{
   remove_tile_layer(x)
