@@ -33,9 +33,12 @@ function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıda
   isimgonder.setAttribute("value","Uygula");
   // katman adı hangi işlem için kullanılıcaksa ilgili işlem, ilgili fonksiyona bildirilir
   if (obje_type==="createpoint"){
-  isimgonder.setAttribute("onclick","check_layer_name('createpoint')");}
+    isimgonder.setAttribute("onclick","check_layer_name('createpoint')");}
   else if (obje_type==="createmultipoint"){
     isimgonder.setAttribute("onclick","check_layer_name('createmultipoint')")
+  }
+  else if (obje_type==="createline"){
+    isimgonder.setAttribute("onclick","check_layer_name('createline')")
   }
   var kapat = document.createElement("button");
   kapat.setAttribute("onclick","bekleme()");
@@ -65,9 +68,10 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
             if (layer_name==="createpoint"){
             create_layer_name("createpoint")
             }
-            else{
+            else if (layer_name==="createmultipoint"){
             create_layer_name("createmultipoint")
             }
+            else if (layer_name==="createline")
             break
           }
         }
@@ -79,6 +83,9 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
         else if(layer_name==="createmultipoint"){
           multi_create_point(layer_demo_name)
           }
+        else if (layer_name==="createline"){
+          create_line(layer_demo_name)
+        }
       }
       
     } 
