@@ -157,5 +157,20 @@ details.forEach((targetDetail) => {
 alert("Uygulamamız tasarım ve içerik olarak henüz geliştirme aşamasındadır.\nGeliştirme Ortamı= Google Chrome\nÇözünürlük : 1920 x 1080 \nEn İyi Deneyim İçin Bilgisayar Üzerinden Girmeniz Tavsiye Olunur.\nİlginiz için teşekkür ederiz.\nBilal Benzer")
 baslangic()
 
-
+function butonlari_devre_disi_birakma(){
+  var butonlar = document.querySelectorAll("button")
+        for (var o in butonlar){
+          try{
+          butonlar[o].disabled=true}
+          catch{}
+        }
+}
+function butonlari_etkinlestirme(){
+  var butonlar = document.querySelectorAll("button")
+        for (var o in butonlar){
+          try{
+          butonlar[o].disabled=false}
+          catch{}
+        }
+}
 </script>
