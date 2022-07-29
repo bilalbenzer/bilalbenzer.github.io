@@ -1,3 +1,5 @@
+var gecici_mousemove_durumu =""
+
 function create_line(katman_name){
     var sayfamesajlari=document.getElementById('sayfamesajlari')
     document.getElementById("oznitelikpenceresi").innerHTML="";
@@ -9,7 +11,6 @@ function create_line(katman_name){
         var asd
         window[name] = new poly_line(class_name=name)
         window[name].menuleriolustur()
-        console.log(noktalar)
         if (noktalar.length===0){
             var stylee = {
                 color: window[name].renk,
@@ -21,7 +22,6 @@ function create_line(katman_name){
             var koordinatgir = document.createElement("button")
             koordinatgir.innerText="Koordinat Girerek Oluştur"
             koordinatgir.onclick=function koordinat_gir(){
-              console.log(noktalar)
               map.off("click")
               sayfamesajlari.innerHTML=""
               sayfamesajlari.innerText="Koordinat Girerek Çizime Başlayabilirsiniz."
@@ -30,7 +30,7 @@ function create_line(katman_name){
               bitirbuton.onclick=async function(){
                   document.getElementById('obje_girdi').innerHTML=""
                   map.off("click")
-                  map.off("mousemove")
+                  
                   try{
                   map.removeLayer(asd)
                   var name2 = "point"+(new Date()).getMilliseconds()+Math.floor(Math.random()*1000);//benzersiz obje id alma
@@ -50,7 +50,6 @@ function create_line(katman_name){
               kapatbuton.innerText="İşlemi Bitir"
               kapatbuton.onclick=function(){
                 map.off("click")
-                map.off("mousemove")
                 try{
                   map.removeLayer(asd)
                 }
@@ -59,6 +58,7 @@ function create_line(katman_name){
 
                 bekleme()
                 document.getElementById('obje_girdi').innerHTML=""
+                return
               }
               sayfamesajlari.appendChild(kapatbuton)
   
@@ -88,7 +88,7 @@ function create_line(katman_name){
                 var nokta1= [parseFloat(yy),parseFloat(xx)]
                 noktalar.push(nokta1)
                 if (noktalar.length!==0){
-                    map.on("mousemove",async(e)=>{
+                    map.on("mousemove",function onizleme(e){
                         try{
                             map.removeLayer(asd)
                         }
@@ -127,8 +127,7 @@ function create_line(katman_name){
             var bitirbuton = document.createElement("button")
             bitirbuton.innerText="Obje Çizimini Bitir"
             bitirbuton.onclick=async function(){
-                map.off("click")
-                map.off("mousemove")
+                gecici_mousemove_durumu="kapalı"
                 try{
                 map.removeLayer(asd)
                 var name2 = "point"+(new Date()).getMilliseconds()+Math.floor(Math.random()*1000);//benzersiz obje id alma
@@ -140,6 +139,7 @@ function create_line(katman_name){
                 catch{
                   alert("Çizim Yapmadınız. Tekrar Deneyiniz.")
                 }
+                noktalar=[]
                 return create_line(name)
             }
             sayfamesajlari.appendChild(document.createElement("br"))
@@ -151,23 +151,26 @@ function create_line(katman_name){
             kapatbuton.innerText="İşlemi Bitir"
             kapatbuton.onclick=function(){
               map.off("click")
-              map.off("mousemove")
+              gecici_mousemove_durumu="kapalı"
               try{
                 map.removeLayer(asd)
               }
               catch{}
               sayfamesajlari.innerHTML="İşlem Tamamlandı"
               bekleme()
+              return
             }
             sayfamesajlari.appendChild(kapatbuton)
 
             map.on("click",(e)=>{
+              gecici_mousemove_durumu="açık"
                 x = (e.latlng.lat).toFixed(8)
                 y = (e.latlng.lng).toFixed(8)
                 var nokta1= [parseFloat(y),parseFloat(x)]
                 noktalar.push(nokta1)
                 if (noktalar.length!==0){
-                    map.on("mousemove",async(e)=>{
+                    gecici_mousemove= map.on("mousemove",function onizleme(e) {
+                        if(gecici_mousemove_durumu==="açık"){
                         try{
                             map.removeLayer(asd)
                         }
@@ -187,7 +190,16 @@ function create_line(katman_name){
                             style:stylee
                         }).addTo(map)
                         noktalar.splice(noktalar.indexOf(nokta1),1)
-                    })
+                    }
+                  else if(gecici_mousemove_durumu==="kapalı"){
+                    try{
+                      map.removeLayer(asd)
+                  }
+                  catch{}
+                    map.off("mousemove",onizleme)
+                  }
+                  })
+                    
                 }
 
             })
@@ -209,8 +221,7 @@ function create_line(katman_name){
         var bitirbuton = document.createElement("button")
         bitirbuton.innerText="Obje Çizimini Bitir"
         bitirbuton.onclick=async function(){
-            map.off("click")
-            map.off("mousemove")
+          gecici_mousemove_durumu="kapalı"
             try{
             map.removeLayer(asd)
             var name2 = "point"+(new Date()).getMilliseconds()+Math.floor(Math.random()*1000);//benzersiz obje id alma
@@ -222,6 +233,7 @@ function create_line(katman_name){
           catch{
             alert("Çizim Yapmadınız. Tekrar Deneyiniz.")
           }
+          noktalar=[]
             return create_line(name)
         }
         sayfamesajlari.appendChild(document.createElement("br"))
@@ -230,13 +242,14 @@ function create_line(katman_name){
         kapatbuton.innerText="İşlemi Bitir"
         kapatbuton.onclick=function(){
           map.off("click")
-          map.off("mousemove")
+          
           try{
             map.removeLayer(asd)
           }
           catch{}
           sayfamesajlari.innerHTML="İşlem Tamamlandı"
           bekleme()
+          return
         }
         sayfamesajlari.appendChild(kapatbuton)
         map.on("click",(e)=>{
@@ -245,27 +258,36 @@ function create_line(katman_name){
             var nokta1= [parseFloat(y),parseFloat(x)]
             noktalar.push(nokta1)
             if (noktalar.length!==0){
-                map.on("mousemove",async(e)=>{
-                    try{
-                        map.removeLayer(asd)
-                    }
-                    catch{
-                    }
-                    asd =""
-                    x = (e.latlng.lat).toFixed(8)
-                    y = (e.latlng.lng).toFixed(8)
-                    var nokta2= [parseFloat(y),parseFloat(x)]
-                    noktalar.push(nokta2)
-                    
-                    var line = [{
-                        "type":"LineString",
-                        "coordinates":noktalar
-                    }]
-                    asd = L.geoJSON(line,{
-                        style:stylee
-                    }).addTo(map)
-                    noktalar.splice(noktalar.indexOf(nokta1),1)
-                })
+              gecici_mousemove= map.on("mousemove",function onizleme(e) {
+                if(gecici_mousemove_durumu==="açık"){
+                try{
+                    map.removeLayer(asd)
+                }
+                catch{
+                }
+                asd =""
+                x = (e.latlng.lat).toFixed(8)
+                y = (e.latlng.lng).toFixed(8)
+                var nokta2= [parseFloat(y),parseFloat(x)]
+                noktalar.push(nokta2)
+                
+                var line = [{
+                    "type":"LineString",
+                    "coordinates":noktalar
+                }]
+                asd = L.geoJSON(line,{
+                    style:stylee
+                }).addTo(map)
+                noktalar.splice(noktalar.indexOf(nokta1),1)
+            }
+          else if(gecici_mousemove_durumu==="kapalı"){
+            try{
+              map.removeLayer(asd)
+          }
+          catch{}
+            map.off("mousemove",onizleme)
+          }
+          })
             }
 
         })
@@ -327,6 +349,7 @@ lineJoin	String	null	A string that defines shape to be used at the corners of th
 clickable	Boolean	true	If false, the vector will not emit mouse events and will act as a part of the underlying map.
 pointerEvents	String	null	Sets the pointer-events attribute on the path if SVG backend is used.
 className	String	''	Custom class name set on an element. */
+                                                            return
       }
       menuleriolustur(){ // katmana ilişkin menü kısmı ve elemanları oluştuurlacak
         this.details_katman =document.createElement("details");
@@ -357,6 +380,7 @@ className	String	''	Custom class name set on an element. */
         document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[4].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].objeyeyaklas()");
         document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[5].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].stildegistirme()");
         document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[6].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].oznitelikgoruntulemeveduzenleme()");
+        return
       }
       haritayaekle(object_bicim,object_id){
         this.tum_ozellikler.objeler["'"+object_id+"'"].feature = L.geoJSON(this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik,{
@@ -372,6 +396,7 @@ className	String	''	Custom class name set on an element. */
     for (var c in this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.geometry.coordinates){
         this.tum_ozellikler.coordinats.push([this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.geometry.coordinates[c][1],this.tum_ozellikler.objeler["'"+object_id+"'"].geometrioznitelik.geometry.coordinates[c][0]])
     }
+    return
 }
     objeyiyenile(){ //bazı durumlarda objelerde değişiklik yaplabilmesi için obje haritadan kaldırılıp tekrar eklenecek
     
@@ -384,6 +409,7 @@ className	String	''	Custom class name set on an element. */
         if (map_layers_id_nolari.includes(window[this.tum_ozellikler.id_nosu])===false){  //class objesi tekrar map_layers_id_nolarina eklenecek
           map_layers_id_nolari.push(window[this.tum_ozellikler.id_nosu])
         }
+        return
       }
       haritadagizle(){  //obje haritadan kaldırılacak
         map.removeLayer(this.tum_ozellikler.featuregroup) //obje haritadan kaldırılacak
@@ -397,9 +423,11 @@ className	String	''	Custom class name set on an element. */
             map_layers_id_nolari.splice(map_layers_id_nolari.indexOf(window[this.tum_ozellikler.id_nosu]),1)  //class objesi map_layers_id_nolari ndan kaldırılacak
           }
         }
+        return
       }
       haritadansil(){ //obje tamamen silinecek
         window[this.tum_ozellikler.id_nosu].haritadagizle()
+        return
       }
       objeyeyaklas(){
         if(Object.keys(this.tum_ozellikler.objeler).length>0){
@@ -418,43 +446,61 @@ className	String	''	Custom class name set on an element. */
         else{
           alert("Katmanda Obje Olmadığı İçin Yaklaşma İşlemi Yapamazsınız.")
         }
+        return
       }
       katmanduzenle(x){
-        butonlari_devre_disi_birakma()
-
+        var asdfg
+        var gecici_cizgi
         sayfamesajlari.innerHTML=""
         sayfamesajlari.style.backgroundColor="black"
         var islem1 = document.createElement("button")
         islem1.innerText="Düzenle"
         islem1.onclick = function objesecmek(){
-          var gecici_cizgi
           var secilen_obje = {obje:null}
           sayfamesajlari.innerHTML=""
           sayfamesajlari.innerText="Düzenlemek İstediğiniz Objeye Tıklayınız."
-          window[x].tum_ozellikler.featuregroup.on('click',function (e){
-            window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"]["feature"])
+
+          window[x].tum_ozellikler.featuregroup.on('click',function objesecmeclick(e){
+
+            window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].feature)
+
             gecici_cizgi = L.geoJSON(window[x].tum_ozellikler.objeler["'"+e.layer.feature.properties.featureid+"'"].geometrioznitelik,{
-              style:{color:"#56ffff"}
+              style:{fillColor:"#56ffff"}
             }).addTo(map)
             secilen_obje.obje = (e.layer.feature.properties.featureid).toString()
-
-
             var kose_noktalari = L.featureGroup().addTo(map)
-                map.removeLayer(gecici_cizgi)
-                window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"]["feature"].addTo(window[x].tum_ozellikler.featuregroup)
+            var ara_noktalar =L.featureGroup().addTo(map)
+            var ara_noktalistesi = []
                 window[x].tum_ozellikler.featuregroup.off('click')
                 for (var o in window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates){
-                  var gecici_oge = L.geoJSON({type:"Feature","geometry":{"type":"Point","coordinates":window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o]}},
+                  var o =parseFloat(o)
+                  var koordinat = window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o]
+                  var gecici_ogee = L.geoJSON({type:"Feature","geometry":{"type":"Point","coordinates":koordinat}},
                   {pointToLayer:function(feature,latlng){
                     return L.circleMarker(latlng,{radius:4,fillColor:"#56ffff",weight:1,fillOpacity:1})
                   }}).addTo(kose_noktalari)
+                  
+                if (0<= o &&  o < window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.length-1){
+                  ara_noktalistesi.push({
+                                    koordinatlar:[(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[parseFloat(o)+1][0] + window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o][0])/2,(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[parseFloat(o)+1][1] + window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o][1])/2],
+                                    bir_onceki_koordinat : window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o],
+                                    bir_sonraki_koordinat : window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[parseFloat(o)+1]} )
+                  var gecici_oge = L.geoJSON({type:"Feature","geometry":{"type":"Point","coordinates":[(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[parseFloat(o)+1][0] + window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o][0])/2,(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[parseFloat(o)+1][1] + window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates[o][1])/2]}},
+                  {pointToLayer:function(feature,latlng){
+                    return L.circleMarker(latlng,{radius:4,fillColor:"#FF0000",weight:1,fillOpacity:1})
+                  }}).addTo(ara_noktalar)
+
+                }
                 }
             sayfamesajlari.innerHTML=""
             var kose_sil = document.createElement("button")
             kose_sil.innerText="Köşe Sil"
+
             kose_sil.onclick=function(){
+
               window[x].tum_ozellikler.featuregroup.off('click')
               kose_noktalari.on("click",function(asd){
+                map.removeLayer(gecici_cizgi)
                 var secilen_kose = asd.layer.feature.geometry.coordinates
                 window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.splice(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.indexOf(secilen_kose),1)
                 console.log(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"])
@@ -469,12 +515,79 @@ className	String	''	Custom class name set on an element. */
               window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].feature.addTo(window[x].tum_ozellikler.featuregroup) //oluşan layer, featuregroupa eklenerek haritaya eklenecek
               kose_noktalari.off("click")
               map.removeLayer(kose_noktalari)
+              map.removeLayer(ara_noktalar)
               return objesecmek()  
+            })
+            }
+            var nokta_ekle = document.createElement("button")
+            nokta_ekle.innerText="Ara Noktayı Kaydır"
+            nokta_ekle.onclick=function(){
+              ara_noktalar.on("click",function(asd){
+                map.removeLayer(gecici_cizgi)
+                var secilen_kose = asd.layer.feature.geometry.coordinates
+                for (var p in ara_noktalistesi){
+                  var gecici_ara_nokta
+                  if (ara_noktalistesi[p].koordinatlar[0]===secilen_kose[0]&&ara_noktalistesi[p].koordinatlar[1]===secilen_kose[1]){
+                    var indexxx= window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.indexOf(ara_noktalistesi[p].bir_onceki_koordinat)
+
+                    map.on("mousemove",function onizleme(xxx){
+                      map.removeLayer(kose_noktalari)
+                      map.removeLayer(ara_noktalar)
+                      try{
+                        map.removeLayer(asdfg)
+                        map.removeLayer(gecici_ara_nokta)
+                      }
+                      catch{}
+                      asdfg=""
+                      
+                      var gecici_koordinatlar=[xxx.latlng.lng ,  xxx.latlng.lat]
+                      gecici_ara_nokta = L.geoJSON({type:"Feature","geometry":{"type":"Point","coordinates":gecici_koordinatlar}},
+                          {pointToLayer:function(feature,latlng){
+                            return L.circleMarker(latlng,{radius:4,fillColor:"#FF0000",weight:1,fillOpacity:1})
+                          }}).addTo(map)
+                      window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].feature)
+                      window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.splice(indexxx+1,0,gecici_koordinatlar)
+                      var line = [{
+                        "type":"LineString",
+                        "coordinates":window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates
+                      }]
+                      asdfg = L.geoJSON(line,{
+                        style : window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].bicim.bicim
+                    }).addTo(map)
+                    window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.splice(indexxx+1,1)
+
+                    map.on("click", function (xcv){
+                      map.removeLayer(gecici_ara_nokta)
+                      map.removeLayer(asdfg)
+                      window[x].tum_ozellikler.featuregroup.removeLayer(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].feature)
+                      map.removeLayer(ara_noktalar)
+                      map.off("mousemove",onizleme)
+                      var new_koordinat = [xcv.latlng.lng ,  xcv.latlng.lat]
+                      window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik.geometry.coordinates.splice(indexxx+1,0,new_koordinat)
+                      window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].feature=L.geoJSON(window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].geometrioznitelik,{
+                        style: window[x].tum_ozellikler.objeler["'"+secilen_obje.obje+"'"].bicim.bicim
+                    }).addTo( window[x].tum_ozellikler.featuregroup)
+                    map.off("click")
+
+                    return objesecmek()
+                    })
+                    })
+
+
+                  }
+                  else{
+                  } 
+                }
+                
+                
+
             })
             }
             sayfamesajlari.appendChild(satiratla)
             sayfamesajlari.appendChild(kose_sil)
+            sayfamesajlari.appendChild(nokta_ekle)
         })
+        return
         }
         var islem2 = document.createElement("button")
         islem2.innerText="Sil"
@@ -489,10 +602,13 @@ className	String	''	Custom class name set on an element. */
         kapatbuton.onclick=function(){
           butonlari_etkinlestirme()
           bekleme()
+          return
         }
         sayfamesajlari.appendChild(kapatbuton)
+        return
       }
-
+      
 
 }
 
+var gecici_mousemove

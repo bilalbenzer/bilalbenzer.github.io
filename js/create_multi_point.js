@@ -74,6 +74,7 @@ function multi_create_point(katman_name){
       map.off("click")
       await sleep(500)
       bekleme()
+      return
     }
     document.getElementById('sayfamesajlari').appendChild(kapatbuton)
     document.getElementById('obje_girdi').appendChild(e_label)
@@ -107,6 +108,7 @@ function multi_create_point(katman_name){
           map.off("click")
           await sleep(500)
           bekleme()
+          return
         }
         document.getElementById('sayfamesajlari').appendChild(kapatbuton)
         //window[name].menuleriolustur()
@@ -128,6 +130,7 @@ function multi_create_point(katman_name){
           map.off("click")
           await sleep(500)
           bekleme()
+          return
         }
         document.getElementById('sayfamesajlari').appendChild(kapatbuton)
       }
@@ -189,6 +192,7 @@ class multi_point {
                                                       },
                                                       feature:null
                                                       }
+                                                      return
   }
   menuleriolustur(){ // katmana ilişkin menü kısmı ve elemanları oluştuurlacak
     this.details_katman =document.createElement("details");
@@ -219,7 +223,7 @@ class multi_point {
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[4].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].objeyeyaklas()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[5].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].stildegistirme()");
     document.getElementById(this.tum_ozellikler.id_nosu).getElementsByTagName("button")[6].setAttribute('onclick',"window['"+this.tum_ozellikler.id_nosu+"'].oznitelikgoruntulemeveduzenleme()");
-  }
+    return}
 
   haritayaekle(object_bicim,object_id){  // oluşan obje özelikleri parametrelerle bu metota verilecek ve featuregroupa layer olarak eklenecek
                                         //obje id si map_layers listesine eklenecek
@@ -238,7 +242,7 @@ class multi_point {
     this.tum_ozellikler.objeler["'"+object_id+"'"].feature._layers[this.tum_ozellikler.featuregroup.getLayerId(this.tum_ozellikler.objeler["'"+object_id+"'"].feature)-1]._latlng.lng])  //objeye ait koordinatlar, class taki coordinates listesine eklenecek
     if (map_layers_id_nolari.includes(window[this.tum_ozellikler.id_nosu])===false){  //class ın tüm özellikleri map_layers_id_nolari na iletilecek
       map_layers_id_nolari.push(window[this.tum_ozellikler.id_nosu])
-    }
+    }return
   }
   objeyiyenile(){ //bazı durumlarda objelerde değişiklik yaplabilmesi için obje haritadan kaldırılıp tekrar eklenecek
     
@@ -251,7 +255,7 @@ class multi_point {
     if (map_layers_id_nolari.includes(window[this.tum_ozellikler.id_nosu])===false){  //class objesi tekrar map_layers_id_nolarina eklenecek
       map_layers_id_nolari.push(window[this.tum_ozellikler.id_nosu])
     }
-  }
+    return}
   haritadagizle(){  //obje haritadan kaldırılacak
     map.removeLayer(this.tum_ozellikler.featuregroup) //obje haritadan kaldırılacak
     var c = Object.keys(this.tum_ozellikler.featuregroup._layers) //layerların id nolari alınacak
@@ -264,10 +268,10 @@ class multi_point {
         map_layers_id_nolari.splice(map_layers_id_nolari.indexOf(window[this.tum_ozellikler.id_nosu]),1)  //class objesi map_layers_id_nolari ndan kaldırılacak
       }
     }
-  }
+    return}
   haritadansil(){ //obje tamamen silinecek
     window[this.tum_ozellikler.id_nosu].haritadagizle()
-  }
+    return}
 
   objeyeyaklas(){ //haritada katmana yaklaşmak için metot
     var koordint_sayisi = this.tum_ozellikler.coordinats.length
@@ -290,7 +294,7 @@ class multi_point {
       window[this.tum_ozellikler.id_nosu].objeyiyenile()
       tilelayer_yenile(gecerli_tilelayer)
     }
-  }
+    return}
   seciliobjeyeyaklas(object_name){
     map.flyTo([this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties["X Koordinatı (Enlem)"],this.tum_ozellikler.objeler["'"+object_name+"'"].geometrioznitelik.properties["Y Koordinatı (Boylam)"]],15,{
       animate:false
@@ -298,7 +302,7 @@ class multi_point {
     tilelayer_yenile(gecerli_tilelayer)
     window[this.tum_ozellikler.id_nosu].objeyiyenile()
     
-  }
+    return}
   katmanduzenle(x){ //katmanda düzenleme işlemleri için metot. haritada click olayı açılarak obje seçilir. seçilen obje açık mavi renk alır ve işlemlere başlanır
     document.getElementById("sayfamesajlari").innerText="Harita Üzerinden Düzenlemek İstediğiniz Objelere Tıklayarak Seçebilirsiniz.\nTaşıma İşlemi İçin Lütfen 1 Obje Seçiniz.\nToplu Değişiklikler Olarak Silme İşlemi Gerçekleştirilebilir\nSeçme İşlemini SOnladırmak İçin 'N' Tuşuna Basınız."
     document.getElementById('sayfamesajlari').style.backgroundColor = "black";
@@ -346,6 +350,7 @@ class multi_point {
               document.getElementById('obje_girdi').innerHTML=""
               map.off("click")
               bekleme()
+              return
             }
             document.getElementById('obje_girdi').appendChild(e_label)
             document.getElementById('obje_girdi').appendChild(e_gir)
@@ -373,6 +378,7 @@ class multi_point {
           map.off("click")
           await sleep(500)
           bekleme()
+          return
         }
         document.getElementById('sayfamesajlari').appendChild(kapatbuton)
         var koordinatile=document.createElement("button")
@@ -413,6 +419,7 @@ class multi_point {
                   document.getElementById('obje_girdi').innerHTML=""
                   map.off("click")
                   bekleme()
+                  return
                 }
                 document.getElementById('sayfamesajlari').innerText=name2+" objesi oluşturuldu \n"+"E="+xx+"   "+"B="+yy+"\n"+kapatbutonn;//sayfa mesajlarında objenin oluştuğuna dair bilgi
 
@@ -451,10 +458,11 @@ class multi_point {
         }
         document.getElementById("sayfamesajlari").innerHTML=""
         object_id_ve_renk=undefined
-
+        return
       }
       else{
         document.getElementById("sayfamesajlari").innerHTML=""
+        return
       }
     }
     document.getElementById("sayfamesajlari").appendChild(kapatbuton)
@@ -485,7 +493,7 @@ class multi_point {
     window[x].objeduzenle(object_id_ve_renk,secilen_objeler,x)
     }
     document.getElementById("sayfamesajlari").appendChild(secimibitirbuton)
-  }
+    return}
   /* SEÇİLEN OBJELERİN SİLİNMESİ, DÜZENLENMESİ, TAŞINMASINA İLİŞKİN FONKSİYON */
   objeduzenle(object_id_ve_renk,secilen_objeler,x){
     this.tum_ozellikler.featuregroup.off('click')
@@ -511,7 +519,7 @@ class multi_point {
         }
         document.getElementById("sayfamesajlari").innerHTML=""
         object_id_ve_renk=undefined
-
+        return
       }
       else{
         document.getElementById("sayfamesajlari").innerHTML=""
@@ -521,9 +529,11 @@ class multi_point {
       document.getElementById("sayfamesajlari").innerHTML=""
       buton1.onclick = function(){
         window[x].objetasi(object_id_ve_renk,x)
+        return
       }
       buton2.onclick = function(){
         window[x].objesil(object_id_ve_renk)
+        return
       }
       document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
       document.getElementById("sayfamesajlari").appendChild(buton1)
@@ -537,6 +547,7 @@ class multi_point {
       document.getElementById("sayfamesajlari").innerHTML=""
       buton2.onclick = function(){
         window[x].objesil(object_id_ve_renk)
+        return
       }
       document.getElementById("sayfamesajlari").appendChild(document.createElement("br"))
       document.getElementById("sayfamesajlari").appendChild(buton2)
@@ -547,6 +558,7 @@ class multi_point {
     else{
       alert("Hiçbir Obje Seçilmedi.")
     }
+    return
   }
   /* SEÇİLEN OBJENİN SİLİNMESİ İÇİN FONKSİYON */
   objesil(object_id_ve_renk){
@@ -571,6 +583,7 @@ class multi_point {
     objeler_yazi+="Başarıyla Silindi."
     document.getElementById("sayfamesajlari").innerText = objeler_yazi
     bekleme()
+    return
   }
   /* SEÇİLEN OBJENİN TAŞINAMSINA İLİŞKİN FONKSİYON */
    objetasi(object_id_ve_renk,class_id){
@@ -632,6 +645,7 @@ class multi_point {
       else{
       }
       })
+      return
   }
   /* SEÇİLEN OBJENİN MANUEL GİRİLEN KOORDİNATA TAŞINMASI */
   objeyitasi_koordinatile(object_id_ve_renk,class_id){
@@ -668,6 +682,7 @@ class multi_point {
     document.getElementById("obje_girdi").appendChild(b1)
     document.getElementById("obje_girdi").appendChild(document.createElement("br"))
     document.getElementById("obje_girdi").appendChild(koordinatal)   
+    return
   }
   objeduzenlekoordinatile(object_id_ve_renk,class_id){
   var x1  = (parseFloat(document.getElementById("xbutton").value)).toFixed(8)
@@ -688,14 +703,16 @@ class multi_point {
   document.getElementById("obje_girdi").style.backgroundColor="unset"
   document.getElementById("obje_girdi").innerHTML=""
   document.getElementById("sayfamesajlari").innerText=object_id2+" Noktası, Başarılı Bir Şekilde " + x1+"----"+y1+" Koordinatlarına Taşındı."
-  
+  return
 }
 /* ÖZNİTELİK BİLGİLERİNİN GÖRÜNTÜLENDİĞİ VE EKLENEN İŞLEVLERİN TUTULDUĞU BÖLÜM */
 oznitelikgoruntulemeveduzenleme(){
+  var id_no=this.tum_ozellikler.id_nosu
   // öznitelik penceresinin en üstünde, obje featureid i ve kapat butonu eklenmesi
   document.getElementById("oznitelikpenceresi").innerText="";
   var ustsekme=document.createElement("div");
   ustsekme.innerText=this.tum_ozellikler.id_nosu;
+  ustsekme.value=this.tum_ozellikler.id_nosu;
   ustsekme.setAttribute("id",this.tum_ozellikler.id_nosu+"kapat");
   ustsekme.style.height="30px";
   ustsekme.style.backgroundColor="white";
@@ -704,7 +721,10 @@ oznitelikgoruntulemeveduzenleme(){
   ustsekme.style.fontSize="large";
   ustsekme.style.fontWeight="bolder";
   var kapatbuton=document.createElement("button");
-  kapatbuton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikpenceresikapat()");
+  kapatbuton.onclick = function(){
+    window[ustsekme.value].oznitelikpenceresikapat()
+    return
+  }
   kapatbuton.setAttribute("value","Kapat");
   kapatbuton.style.width="100px";
   kapatbuton.style.height="30px";
@@ -878,6 +898,7 @@ oznitelikgoruntulemeveduzenleme(){
       document.getElementById("'"+object_namee+"-"+kolonun_adi+"'_kolonicerik_detail").appendChild(kolonicerik_menu);
     }
   }
+  return
 }
 /* SEÇİLEN KOLONUN DÜZENLENDİĞİ FONSKİYON */
   oznitelikkolonduzenle(kolon_adi){
@@ -930,6 +951,7 @@ oznitelikgoruntulemeveduzenleme(){
         uygula_buton.innerText="Uygula";
         uygula_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikdegisiklikuygula('"+kolon_adi+"')");
         document.getElementById("tipsecim").appendChild(uygula_buton);
+        return
   }
   /* DÜZENLENEN FONKSİYONUN BİLGİLERİNİN UYGULANMASI */
   oznitelikdegisiklikuygula(kolon_adi){
@@ -992,10 +1014,13 @@ oznitelikgoruntulemeveduzenleme(){
       }
       window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
       window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-      bekleme();}
+      bekleme();
+      return}
+      
     else{
       alert("kolon adı uygun değil")
     }
+    return
   }
   /* KOLON EKLEME */
   sagakolonekle(kolon_adi){
@@ -1047,6 +1072,7 @@ oznitelikgoruntulemeveduzenleme(){
       uygula_buton.innerText="Ekle";
       uygula_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].sagakolonekleson('"+kolon_adi+"')");
       document.getElementById("tipsecim").appendChild(uygula_buton);
+      return
       }
 /* KOLON EKLEME İŞLEMİ UYGULANMASI */
   sagakolonekleson(kolon_adi){
@@ -1087,10 +1113,11 @@ oznitelikgoruntulemeveduzenleme(){
         }
         window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
         window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-        bekleme();}
+        bekleme();
+        return}
         else {
           alert("Kolon Adı Uygun Değil")
-        }
+        }return
       }
       /* KOLON SİLME  */
   oznitelikkolonsil(kolon_adi){
@@ -1100,7 +1127,7 @@ oznitelikgoruntulemeveduzenleme(){
       delete this.tum_ozellikler.kolon_ve_tipleri[kolon_adi]
     }
     window[this.tum_ozellikler.id_nosu].oznitelikgoruntulemeveduzenleme();
-    window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);
+    window[this.tum_ozellikler.id_nosu].objeyiyenile(window[this.tum_ozellikler.id_nosu]);return
   }
   /* KOLON ÖZELLİKLERİ */
   oznitelikmenuozellikler(kolon_adi){
@@ -1120,7 +1147,7 @@ oznitelikgoruntulemeveduzenleme(){
         kapatbutonu.setAttribute("value","Kapat");
         kapatbutonu.setAttribute("onclick","bekleme()");
         kapatbutonu.innerText="Kapat";
-        document.getElementById("sayfamesajlari").appendChild(kapatbutonu);
+        document.getElementById("sayfamesajlari").appendChild(kapatbutonu);return
   }
   /* NİTELİK DEĞİŞTİRME */
   oznitelikicerikdegistir(kolon_adi,obje_name){
@@ -1162,7 +1189,7 @@ oznitelikgoruntulemeveduzenleme(){
     degistir_buton.setAttribute("type","submit");
     degistir_buton.setAttribute("value","Değiştir");
     degistir_buton.setAttribute("onclick","window['"+this.tum_ozellikler.id_nosu+"'].oznitelikicerikdegistir_butonlaal('"+kolon_adi+"','"+kolonicerik_bilgi.innerText+"','"+obje_name+"')");
-    sayfamesajlari.appendChild(degistir_buton);
+    sayfamesajlari.appendChild(degistir_buton);return
   }
 /* İÇERİK DEĞİŞİTMR E UYGULAMA  */
   oznitelikicerikdegistir_butonlaal(kolon_adi,kolonicerigi,obje_name){
@@ -1186,11 +1213,12 @@ oznitelikgoruntulemeveduzenleme(){
   
 
   bekleme();
-  
+  return
   }    
   oznitelikpenceresikapat(){
     document.getElementById("oznitelikpenceresi").innerText="";
     document.getElementById("oznitelikpenceresi").backgroundColor="unset"
+    return
   }
   /* STİL DEĞİŞTİRME BÖLÜMÜ */
   stildegistirme(){
@@ -1263,6 +1291,7 @@ oznitelikgoruntulemeveduzenleme(){
               }
               sayfamesajlari.innerHTML=""
               secilecekobjelerineskirenkleri={}
+              return
            }
             sayfamesajlari.appendChild(kapatbuton)
     }
@@ -1271,6 +1300,7 @@ oznitelikgoruntulemeveduzenleme(){
     kapatbuton.innerText="Kapat"
     kapatbuton.onclick=function(){
       sayfamesajlari.innerHTML=""
+      return
    }
     sayfamesajlari.appendChild(document.createElement("br"))
     sayfamesajlari.appendChild(kapatbuton)      
@@ -1345,9 +1375,10 @@ oznitelikgoruntulemeveduzenleme(){
               }
               sayfamesajlari.innerHTML=""
               secilecekobjelerineskirenkleri={}
+              return
            }
             sayfamesajlari.appendChild(kapatbuton)                                
-
+            return
       }
 
       secilenobjelerstildegistir(secilecekobjelerineskirenkleri,class_id){
@@ -1935,6 +1966,7 @@ oznitelikgoruntulemeveduzenleme(){
                     sayfamesajlari.innerText=""
                     sayfamesajlari.innerHTML=""
                     sayfamesajlari.style.backgroundColor="unset"
+                    return
                   }
                   sayfamesajlari.appendChild(kapatbuton)
 
@@ -2065,6 +2097,7 @@ oznitelikgoruntulemeveduzenleme(){
             kapatbuton.innerText="Kapat"
             kapatbuton.onclick=function(){
               sayfamesajlari.innerHTML=""
+              return
             }
 
             sayfamesajlari.appendChild(buyukluksecimlabel)
@@ -2095,6 +2128,7 @@ oznitelikgoruntulemeveduzenleme(){
             kapatbuton.onclick=function(){
               document.getElementById("sayfamesajlari").innerHTML=""
               document.getElementById("sayfamesajlari").innerText=""
+              return
             }
             sayfamesajlari.appendChild(kapatbuton)
             sayfamesajlari.appendChild(document.createElement("br"))  
@@ -2300,6 +2334,7 @@ oznitelikgoruntulemeveduzenleme(){
             sayfamesajlari.innerText=""
             sayfamesajlari.innerHTML=""
             sayfamesajlari.style.backgroundColor="unset"
+            return
           }
           sayfamesajlari.appendChild(kapatbuton)
           
@@ -2339,9 +2374,10 @@ oznitelikgoruntulemeveduzenleme(){
           sayfamesajlari.innerText=""
           sayfamesajlari.innerHTML=""
           sayfamesajlari.style.backgroundColor="unset"
+          return
         }
         sayfamesajlari.appendChild(kapatbuton)
-
+        return
       }
       objeurluygula(class_id,sembol_url){
         for (var i in Object.keys(secilecekobjelerineskirenkleri)){
@@ -2358,12 +2394,13 @@ oznitelikgoruntulemeveduzenleme(){
             }
           }).addTo(window[class_id].tum_ozellikler.featuregroup)
         }
-        
+        return
       }
 }
 var secilecekobjelerineskirenkleri={}
 async function sureli_bekleme(x){
   await sleep(x)
+  return
 }
 
 

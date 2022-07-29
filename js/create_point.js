@@ -21,8 +21,6 @@ function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıda
   document.getElementById("create_object").open = false
   document.getElementById("sayfamesajlari").style.backgroundColor="black";
   document.getElementById("sayfamesajlari").innerText="Katman Adını Giriniz.";
-  var formelement = document.createElement("form");
-  formelement.setAttribute("class","formelementi");
   var isimal = document.createElement("input");
   isimal.setAttribute("id","isimal");
   isimal.setAttribute("name","Katman Adı");
@@ -33,12 +31,24 @@ function create_layer_name(obje_type){ //oluşturulacak obje için kullanıcıda
   isimgonder.setAttribute("value","Uygula");
   // katman adı hangi işlem için kullanılıcaksa ilgili işlem, ilgili fonksiyona bildirilir
   if (obje_type==="createpoint"){
-    isimgonder.setAttribute("onclick","check_layer_name('createpoint')");}
+    isimgonder.onclick=function(){
+      check_layer_name('createpoint')
+      return
+    }
+    }
+    
   else if (obje_type==="createmultipoint"){
-    isimgonder.setAttribute("onclick","check_layer_name('createmultipoint')")
+    isimgonder.onclick=function(){
+      check_layer_name('createmultipoint')
+      return
+    }
   }
   else if (obje_type==="createline"){
-    isimgonder.setAttribute("onclick","check_layer_name('createline')")
+    isimgonder.onclick=function(){
+      check_layer_name('createline')
+      return
+    }
+    
   }
   var kapat = document.createElement("button");
   kapat.setAttribute("onclick","bekleme()");
@@ -67,9 +77,11 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
             //KULLANICIDAN TEKRAR KATMAN ADI GİRMESİ İÇİN ÖNCEKİ FNKSİYONA GÖNDERİLİR
             if (layer_name==="createpoint"){
             create_layer_name("createpoint")
+            return
             }
             else if (layer_name==="createmultipoint"){
             create_layer_name("createmultipoint")
+            return
             }
             else if (layer_name==="createline")
             break
@@ -79,12 +91,15 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
       if (kontrol_durum==="sorun yok"){
         if (layer_name==="createpoint"){
           create_point(layer_demo_name)
+          return
           }
         else if(layer_name==="createmultipoint"){
           multi_create_point(layer_demo_name)
+          return
           }
         else if (layer_name==="createline"){
           create_line(layer_demo_name)
+          return
         }
       }
       
@@ -94,18 +109,22 @@ function check_layer_name(layer_name){ //kullanıcıdan gelen katman adı, bir k
       alert("Bu Katman Adı İle Daha Önce Bir Katman Oluşturuldu. Farklı Bir Ad Deneyiniz.")
       if (layer_name==="createpoint"){
         create_layer_name("createpoint")
+        return
         }
         else{
           create_layer_name("createmultipoint")
+          return
         }
     }
     else {
       alert("Katman Adı Özel Karakter,sayı ve boşluk ile başlayamaz.\nTekrar Deneyiniz.")
       if (layer_name==="createpoint"){
         create_layer_name("createpoint")
+        return
         }
         else{
           create_layer_name("createmultipoint")
+          return
         }
     }
 }
@@ -130,6 +149,7 @@ function create_point(a){
         document.getElementById("sayfamesajlari").innerText="İşlem İptal Edilmiştir"
         document.getElementById('obje_girdi').innerHTML=""
         bekleme()
+        return
       }
       document.getElementById("sayfamesajlari").appendChild(iptal_buton)  
     }
@@ -1186,6 +1206,7 @@ class point_object {
     window[i].haritadansil();
     delete window[i];
     document.getElementById(i).remove();
+    return
   }
 
   //-------------------url olup olmadığına dair kontrol 
@@ -1201,6 +1222,7 @@ function isValidURL(u){
   }
   else{
       console.log("Url Adresi Boş Girilemez.");
+      return
   }
 }
 /* SEMBOLLER */
